@@ -7,14 +7,15 @@ const MainPage = () => {
     <div className="container mx-auto p-6">
       {/* Conteneur pour les boutons */}
       <div className="flex justify-between space-x-4 mb-8">
-        <Button label="Groceries" />
-        <Button label="Electronics" />
-        <Button label="Premium fruits" />
-        <Button label="Home & Kitchen" />
-        <Button label="Fashion" />
-        <Button label="Beauty & Personal Care" />
-        <Button label="Sports & Fitness" />
-        <Button label="Home Improvement" />
+        <Button label="Smartphon" />
+        <Button label="Games" />
+        <Button label="Television" />
+        <Button label="Headphones" />
+        <Button label="Laptops" />
+        <Button label="Speakers" />
+        <Button label="Camera" />
+        <Button label="Alarm" />
+
       </div>
 
       <div className="flex justify-center">
