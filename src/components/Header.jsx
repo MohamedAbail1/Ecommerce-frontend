@@ -8,7 +8,7 @@ const Header = ({ onLoginClick }) => {
             {/* Logo & Menu */}
             <div className="flex items-center space-x-2 " style={{color:"#05a6fb"}}>
                 <FontAwesomeIcon icon={faBars} className="text-xl cursor-pointer" />
-                <p className="text-xl font-bold" >MegaMart</p>
+                <p className="text-xl font-bold" >EcoWeb</p>
             </div>
 
             {/* Search Bar */}

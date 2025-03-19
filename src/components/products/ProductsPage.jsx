@@ -40,14 +40,15 @@ const ProductsPage = () => {
       category: 'Smartphone',
       id: 1
     },
+    
     {
-      image: 'https://demothemesky-be87.kxcdn.com/ecomall/wp-content/uploads/2023/03/17-400x400.jpg',
+      image: 'https://demo.theme-sky.com/ecomall/wp-content/uploads/2023/03/75-400x400.jpg',
       price: 49.99,
       stars: 5,
-      name: 'Gaming Console X',
-      description: 'The best gaming console for hardcore gamers.',
+      name: 'Laptop Console X',
+      description: 'The best Laptop console for hardcore gamers.',
       isOnSale: false,
-      category: 'Gaming',
+      category: 'Laptop',
       id: 2
     },
     {
@@ -93,11 +94,11 @@ const ProductsPage = () => {
       </div>
 
       {/* Ajoute ici d'autres sections pour d'autres catégories */}
-      {/* Exemple pour Gaming */}
+      {/* Exemple pour Laptop */}
       <div className="mb-8">
-        <h2 className="text-2xl font-semibold mb-4">Gaming Consoles</h2>
+        <h2 className="text-2xl font-semibold mb-4">Laptop Consoles</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {categories['Gaming'] && categories['Gaming'].map((product) => (
+          {categories['Laptop'] && categories['Laptop'].map((product) => (
             <ProductCard
               key={product.id}
               image={product.image}

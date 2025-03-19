@@ -13,7 +13,7 @@ const LoginPage = ({ onClose }) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center z-50 backdrop-blur-sm">
+    <div className="fixed inset-0  bg-opacity-75 flex items-center justify-center z-50 backdrop-blur-lg">
       {/* Conteneur de formulaire avec effet de flou */}
       <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md relative">
         {/* Icône de fermeture */}

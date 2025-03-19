@@ -4,10 +4,10 @@ import Header from "./Header";
 import LoginPage from "./LoginPage";
 import MainPage from "./MainPage";
 import ProductsPage from "./products/ProductsPage";
+import Footer from "./footer/Footer";
 
 
 const LandingPage = () => {
-
   const [showLogin, setShowLogin] = useState(false);
 
   const handleLoginClick = () => {
@@ -20,11 +20,14 @@ const LandingPage = () => {
 
   return (
     <>
-    <Navbar />
-    <Header  onLoginClick={handleLoginClick} />
-    {showLogin && <LoginPage onClose={handleCloseLogin} />}
-    <MainPage />
-    <ProductsPage />
+      <div>
+        <Navbar />
+        <Header onLoginClick={handleLoginClick} />
+        {showLogin && <LoginPage onClose={handleCloseLogin} />}
+        <MainPage />
+        <ProductsPage />
+        <Footer />
+      </div>
     </>
   );
 };

@@ -15,8 +15,8 @@ const icons = {
 
 const Button = ({ label }) => {
   return (
-    <button className="bg-gray-100 border-lg py-2 px-4 rounded-md flex items-center space-x-2 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-300">
-      <FontAwesomeIcon icon={icons[label]} />
+    <button className="bg-white border-lg py-5 px-5 rounded-md flex items-center space-x-2 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-300 cursor-pointer">
+      <FontAwesomeIcon icon={icons[label]} className="text-[#05a6fb]" />
       <span>{label}</span>
     </button>
   );

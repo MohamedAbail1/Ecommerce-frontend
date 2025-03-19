@@ -4,7 +4,7 @@ import landingImage from "../assets/mains.png";
 
 const MainPage = () => {
   return (
-    <div className="container mx-auto p-6">
+    <div className="container mx-auto p-6 bg-gray-100">
       {/* Conteneur pour les boutons */}
       <div className="flex justify-between space-x-4 mb-8">
         <Button label="Smartphon" />
