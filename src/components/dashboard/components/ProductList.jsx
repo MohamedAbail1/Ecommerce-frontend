@@ -26,7 +26,7 @@ export default function ProductList() {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h2 className="text-xl font-semibold">Products</h2>
+        <h2 className="text-xl font-semibold"></h2>
         <button
           onClick={() => setSelectedProduct({})}
           className="bg-blue-600 text-white py-2 px-4 rounded-md"

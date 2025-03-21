@@ -1,9 +1,9 @@
 import ProductList from "../components/ProductList";
-
+import Header from "../components/Header";
 export default function Products() {
   return (
     <div>
-      <h2 className="text-xl font-semibold mb-4">Manage Products</h2>
+      <Header title="Manage Products" />
       <ProductList />
     </div>
   );
