@@ -1,32 +1,49 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import axios from 'axios';
 import ProductForm from './ProductForm';
 
 export default function ProductList() {
-  const [products, setProducts] = useState([
-    { id: 1, name: 'Laptop', description: 'High performance laptop', price: 999, image: 'image_url', category_id: '1' },
-    { id: 2, name: 'Smartphone', description: 'Latest model smartphone', price: 799, image: 'image_url', category_id: '2' }
-  ]);
-  
+  const [products, setProducts] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState(null);
 
-  const addProduct = (newProduct) => {
-    setProducts([...products, { ...newProduct, id: products.length + 1 }]);
-    setSelectedProduct(null);
+  const token = "1|hMWY0xeVHpYdokZopSAaWpNDg7CxWfe0ixtCMxs567f898d3"; // Remplace par le token dynamique si nécessaire
+
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
+  // Fonction pour récupérer les produits
+  const fetchProducts = async () => {
+    try {
+      const response = await axios.get('http://127.0.0.1:8000/api/admin/products', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+      setProducts(response.data);
+    } catch (error) {
+      console.error('Erreur lors de la récupération des produits', error);
+    }
   };
 
-  const updateProduct = (updatedProduct) => {
-    setProducts(products.map((product) => (product.id === updatedProduct.id ? updatedProduct : product)));
-    setSelectedProduct(null);
-  };
-
-  const deleteProduct = (id) => {
-    setProducts(products.filter((product) => product.id !== id));
+  // Fonction pour supprimer un produit
+  const deleteProduct = async (id) => {
+    try {
+      await axios.delete(`http://127.0.0.1:8000/api/admin/products/${id}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+      fetchProducts();
+    } catch (error) {
+      console.error('Erreur lors de la suppression du produit', error);
+    }
   };
 
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h2 className="text-xl font-semibold"></h2>
+        <h2 className="text-xl font-semibold">Product List</h2>
         <button
           onClick={() => setSelectedProduct({})}
           className="bg-blue-600 text-white py-2 px-4 rounded-md"
@@ -36,7 +53,7 @@ export default function ProductList() {
       </div>
 
       {selectedProduct !== null && (
-        <ProductForm product={selectedProduct} onSubmit={selectedProduct.id ? updateProduct : addProduct} />
+        <ProductForm product={selectedProduct} onSubmit={fetchProducts} />
       )}
 
       <div className="bg-white p-4 rounded-lg shadow">
