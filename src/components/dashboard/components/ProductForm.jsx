@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
+import axios from 'axios';
 
-export default function ProductForm({ product = null, onSubmit }) {
+export default function ProductForm({ product = null, onSubmit, onClose }) {
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -9,6 +10,9 @@ export default function ProductForm({ product = null, onSubmit }) {
     category_id: ''
   });
 
+  const token = "1|hMWY0xeVHpYdokZopSAaWpNDg7CxWfe0ixtCMxs567f898d3";
+
+  // Initialiser le formulaire si un produit est sélectionné
   useEffect(() => {
     if (product) {
       setFormData({
@@ -29,9 +33,47 @@ export default function ProductForm({ product = null, onSubmit }) {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    onSubmit(formData);
+    if (product) {
+      // Mettre à jour le produit
+      await updateProduct(formData);
+    } else {
+      // Ajouter un produit
+      await addProduct(formData);
+    }
+  };
+
+  // Fonction pour ajouter un produit
+  const addProduct = async (newProduct) => {
+    try {
+      const response = await axios.post('http://127.0.0.1:8000/api/admin/products', newProduct, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+      onSubmit(response.data);
+      onClose(); // Fermer le formulaire après l'ajout
+    } catch (error) {
+      console.error('Erreur lors de l\'ajout du produit', error);
+    }
+  };
+
+  // Fonction pour mettre à jour un produit
+  const updateProduct = async (data) => {
+    try {
+      const response = await axios.put(`http://127.0.0.1:8000/api/admin/products/${product.id}`, data, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+      onSubmit(response.data);
+      onClose(); // Fermer le formulaire après la mise à jour
+    } catch (error) {
+      console.error('Erreur lors de la mise à jour du produit', error);
+    }
   };
 
   return (
