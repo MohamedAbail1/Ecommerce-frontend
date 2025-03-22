@@ -1,13 +1,14 @@
-import { useState, useEffect } from 'react';
-import axios from 'axios';
+import { useState, useEffect } from "react";
+import axios from "axios";
 
 export default function ProductForm({ product = null, onSubmit, onClose }) {
   const [formData, setFormData] = useState({
-    name: '',
-    description: '',
-    price: '',
-    image: '',
-    category_id: ''
+    name: "",
+    description: "",
+    price: "",
+    image: "",
+    category_id: "",
+    stock: "",
   });
 
   const token = "1|hMWY0xeVHpYdokZopSAaWpNDg7CxWfe0ixtCMxs567f898d3";
@@ -20,7 +21,7 @@ export default function ProductForm({ product = null, onSubmit, onClose }) {
         description: product.description,
         price: product.price,
         image: product.image,
-        category_id: product.category_id
+        category_id: product.category_id,
       });
     }
   }, [product]);
@@ -29,17 +30,16 @@ export default function ProductForm({ product = null, onSubmit, onClose }) {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (product) {
-      // Mettre à jour le produit
+    console.log("Submitting form:", formData);
+    if (product && product.id) {
       await updateProduct(formData);
     } else {
-      // Ajouter un produit
       await addProduct(formData);
     }
   };
@@ -47,41 +47,53 @@ export default function ProductForm({ product = null, onSubmit, onClose }) {
   // Fonction pour ajouter un produit
   const addProduct = async (newProduct) => {
     try {
-      const response = await axios.post('http://127.0.0.1:8000/api/admin/products', newProduct, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      });
+      const response = await axios.post(
+        "http://127.0.0.1:8000/api/admin/products",
+        newProduct,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
       onSubmit(response.data);
       onClose(); // Fermer le formulaire après l'ajout
     } catch (error) {
-      console.error('Erreur lors de l\'ajout du produit', error);
+      console.error("Erreur lors de l'ajout du produit", error);
     }
   };
 
   // Fonction pour mettre à jour un produit
   const updateProduct = async (data) => {
     try {
-      const response = await axios.put(`http://127.0.0.1:8000/api/admin/products/${product.id}`, data, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      });
+      const response = await axios.put(
+        `http://127.0.0.1:8000/api/admin/products/${product.id}`,
+        data,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
       onSubmit(response.data);
       onClose(); // Fermer le formulaire après la mise à jour
     } catch (error) {
-      console.error('Erreur lors de la mise à jour du produit', error);
+      console.error("Erreur lors de la mise à jour du produit", error);
     }
   };
 
   return (
     <div className="bg-white p-6 rounded-lg shadow-md">
-      <h2 className="text-xl font-semibold mb-4">{product ? 'Edit Product' : 'Add Product'}</h2>
+      <h2 className="text-xl font-semibold mb-4">
+        {product ? "Edit Product" : "Add Product"}
+      </h2>
       <form onSubmit={handleSubmit}>
         <div className="mb-4">
-          <label htmlFor="name" className="block text-sm font-medium">Product Name</label>
+          <label htmlFor="name" className="block text-sm font-medium">
+            Product Name
+          </label>
           <input
             type="text"
             name="name"
@@ -93,7 +105,9 @@ export default function ProductForm({ product = null, onSubmit, onClose }) {
           />
         </div>
         <div className="mb-4">
-          <label htmlFor="description" className="block text-sm font-medium">Description</label>
+          <label htmlFor="description" className="block text-sm font-medium">
+            Description
+          </label>
           <textarea
             name="description"
             id="description"
@@ -104,7 +118,9 @@ export default function ProductForm({ product = null, onSubmit, onClose }) {
           />
         </div>
         <div className="mb-4">
-          <label htmlFor="price" className="block text-sm font-medium">Price</label>
+          <label htmlFor="price" className="block text-sm font-medium">
+            Price
+          </label>
           <input
             type="number"
             name="price"
@@ -116,7 +132,9 @@ export default function ProductForm({ product = null, onSubmit, onClose }) {
           />
         </div>
         <div className="mb-4">
-          <label htmlFor="image" className="block text-sm font-medium">Image URL</label>
+          <label htmlFor="image" className="block text-sm font-medium">
+            Image URL
+          </label>
           <input
             type="text"
             name="image"
@@ -128,7 +146,9 @@ export default function ProductForm({ product = null, onSubmit, onClose }) {
           />
         </div>
         <div className="mb-4">
-          <label htmlFor="category_id" className="block text-sm font-medium">Category</label>
+          <label htmlFor="category_id" className="block text-sm font-medium">
+            Category
+          </label>
           <input
             type="text"
             name="category_id"
@@ -139,11 +159,25 @@ export default function ProductForm({ product = null, onSubmit, onClose }) {
             className="w-full p-2 mt-1 border rounded-md"
           />
         </div>
+        <div className="mb-4">
+          <label htmlFor="stock" className="block text-sm font-medium">
+            Stock
+          </label>
+          <input
+            type="number"
+            name="stock"
+            id="stock"
+            value={formData.stock}
+            onChange={handleChange}
+            required
+            className="w-full p-2 mt-1 border rounded-md"
+          />
+        </div>
         <button
           type="submit"
           className="w-full py-2 bg-blue-600 text-white rounded-md"
         >
-          {product ? 'Update Product' : 'Add Product'}
+          {product ? "Update Product" : "Add Product"}
         </button>
       </form>
     </div>
