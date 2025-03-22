@@ -95,18 +95,21 @@ export default function ProductList() {
                 <td className="px-4 py-2">${product.stock}</td>
                 <td className="px-4 py-2">{product.category_id}</td>
                 <td className="px-4 py-2">
-                  <button
-                    onClick={() => handleEditClick(product)}
-                    className="text-blue-600"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => deleteProduct(product.id)}
-                    className="ml-2 text-red-600"
-                  >
-                    Delete
-                  </button>
+                <div className="flex space-x-2">
+  <button
+    onClick={() => handleEditClick(product)}
+    className="px-4 py-1 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition duration-200"
+  >
+    Edit
+  </button>
+  <button
+    onClick={() => deleteProduct(product.id)}
+    className="px-4 py-1 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 transition duration-200"
+  >
+    Delete
+  </button>
+</div>
+
                 </td>
               </tr>
             ))}

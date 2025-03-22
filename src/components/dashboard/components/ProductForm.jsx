@@ -10,11 +10,29 @@ export default function ProductForm({ product = null, onSubmit, onClose }) {
     category_id: "",
     stock: "",
   });
-
+  const [categories, setCategories] = useState([]); // Pour stocker les catégories disponibles
   const token = "1|hMWY0xeVHpYdokZopSAaWpNDg7CxWfe0ixtCMxs567f898d3";
 
   // Initialiser le formulaire si un produit est sélectionné
   useEffect(() => {
+    // Récupérer les catégories disponibles
+    const fetchCategories = async () => {
+      try {
+        const response = await axios.get(
+          "http://127.0.0.1:8000/api/admin/categories",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        setCategories(response.data); // Remplir les catégories
+      } catch (error) {
+        console.error("Erreur lors de la récupération des catégories", error);
+      }
+    };
+    fetchCategories();
+
     if (product) {
       setFormData({
         name: product.name,
@@ -22,6 +40,7 @@ export default function ProductForm({ product = null, onSubmit, onClose }) {
         price: product.price,
         image: product.image,
         category_id: product.category_id,
+        stock: product.stock,
       });
     }
   }, [product]);
@@ -149,15 +168,23 @@ export default function ProductForm({ product = null, onSubmit, onClose }) {
           <label htmlFor="category_id" className="block text-sm font-medium">
             Category
           </label>
-          <input
-            type="text"
+          <select
             name="category_id"
             id="category_id"
             value={formData.category_id}
             onChange={handleChange}
             required
             className="w-full p-2 mt-1 border rounded-md"
-          />
+          >
+            <option value="" disabled>
+              Select Category
+            </option>
+            {categories.map((category) => (
+              <option key={category.id} value={category.id}>
+                {category.name}
+              </option>
+            ))}
+          </select>
         </div>
         <div className="mb-4">
           <label htmlFor="stock" className="block text-sm font-medium">
