@@ -7,11 +7,17 @@ export default function ProductList() {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [showForm, setShowForm] = useState(false);
 
-  const token = "1|hMWY0xeVHpYdokZopSAaWpNDg7CxWfe0ixtCMxs567f898d3";
+  // Récupérer le token depuis localStorage
+  const token = localStorage.getItem("token");
 
   useEffect(() => {
-    fetchProducts();
-  }, []);
+    // Si un token est trouvé, on peut récupérer les produits
+    if (token) {
+      fetchProducts();
+    } else {
+      console.log("Token non trouvé. Vous devez vous connecter.");
+    }
+  }, [token]);
 
   const fetchProducts = async () => {
     try {
@@ -95,21 +101,20 @@ export default function ProductList() {
                 <td className="px-4 py-2">${product.stock}</td>
                 <td className="px-4 py-2">{product.category_id}</td>
                 <td className="px-4 py-2">
-                <div className="flex space-x-2">
-  <button
-    onClick={() => handleEditClick(product)}
-    className="px-4 py-1 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition duration-200"
-  >
-    Edit
-  </button>
-  <button
-    onClick={() => deleteProduct(product.id)}
-    className="px-4 py-1 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 transition duration-200"
-  >
-    Delete
-  </button>
-</div>
-
+                  <div className="flex space-x-2">
+                    <button
+                      onClick={() => handleEditClick(product)}
+                      className="px-4 py-1 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition duration-200"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => deleteProduct(product.id)}
+                      className="px-4 py-1 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 transition duration-200"
+                    >
+                      Delete
+                    </button>
+                  </div>
                 </td>
               </tr>
             ))}

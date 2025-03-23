@@ -6,7 +6,15 @@ export default function Categories() {
   const [newCategory, setNewCategory] = useState(""); // Pour l'ajout de catégorie
   const [editCategory, setEditCategory] = useState(null); // Pour l'édition de catégorie
   const [editedName, setEditedName] = useState(""); // Pour le nom modifié de la catégorie
-  const token = "1|hMWY0xeVHpYdokZopSAaWpNDg7CxWfe0ixtCMxs567f898d3"; // Ton token
+
+  // Récupérer le token depuis localStorage
+  const token = localStorage.getItem("token"); // Récupération du token depuis localStorage
+
+  // Vérifier si le token existe
+  if (!token) {
+    // Si le token n'existe pas, rediriger l'utilisateur vers la page de login
+    window.location.href = "/login"; // Change cela en fonction de ta logique de redirection
+  }
 
   // Récupération des catégories depuis l'API
   useEffect(() => {

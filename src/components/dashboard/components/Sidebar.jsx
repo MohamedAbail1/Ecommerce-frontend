@@ -1,7 +1,7 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHome,faCog, faUsers, faShoppingBag, faBoxOpen, faClipboardList, faUser, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
 import { Link } from 'react-router-dom';
-
+import Logout from './Logout';
 export default function Sidebar() {
   const handleLogout = () => {
     // Logique de déconnexion (par exemple, supprimer le token, rediriger vers la page de login, etc.)
@@ -51,7 +51,7 @@ export default function Sidebar() {
         {/* Section Log Out */}
         <div className="flex items-center hover:bg-gray-700 p-2 rounded cursor-pointer" onClick={handleLogout}>
           <FontAwesomeIcon icon={faSignOutAlt} className="h-5 w-5 mr-3" />
-          Log Out
+          <Logout />
         </div>
       </nav>
     </div>
