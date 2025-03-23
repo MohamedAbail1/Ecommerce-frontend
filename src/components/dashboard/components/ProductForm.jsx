@@ -11,11 +11,10 @@ export default function ProductForm({ product = null, onSubmit, onClose }) {
     stock: "",
   });
   const [categories, setCategories] = useState([]); // Pour stocker les catégories disponibles
-  const token = "1|hMWY0xeVHpYdokZopSAaWpNDg7CxWfe0ixtCMxs567f898d3";
+  const token = localStorage.getItem("token");
 
   // Initialiser le formulaire si un produit est sélectionné
   useEffect(() => {
-    // Récupérer les catégories disponibles
     const fetchCategories = async () => {
       try {
         const response = await axios.get(
@@ -26,7 +25,7 @@ export default function ProductForm({ product = null, onSubmit, onClose }) {
             },
           }
         );
-        setCategories(response.data); // Remplir les catégories
+        setCategories(response.data);
       } catch (error) {
         console.error("Erreur lors de la récupération des catégories", error);
       }
