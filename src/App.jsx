@@ -15,12 +15,31 @@ import Home from "./components/shop/pages/Home";
 import ProductDetails from "./components/shop/pages/ProductDetails";
 import Cart from "./components/shop/pages/Cart";
 import Checkout from "./components/shop/pages/Checkout";
+import Aprop from './components/apropos/apropos';
+import Contacter from './components/contacterNous/contacter';
+import Navbar from './components/Acceuil/NavBar';
+import Footer  from './components/Acceuil/Footer'
+import Layout from './components/Acceuil/Layout';
+import Fet from './components/Acceuil/Features';
+import LayoutAcceuil from './components/Acceuil/Acceuil';
 function App() {
   return (
     <Router>
+      
       <Routes>
+        {/* acceuil */}
+        <Route path="/shop/Fet" element={<Fet />} />
+        <Route path="/shop/about" element={<Layout><Aprop /></Layout>} />
+        <Route path="/shop/Contact" element={<Layout><Contacter /></Layout>} />
+        <Route path="/login" element= {<Layout><Login /></Layout>}/>
+        <Route path="/shop" element= {<LayoutAcceuil><Home /></LayoutAcceuil>}/>
+      {/*  */}
+     
+
+
+
         {/* ✅ Shop public */}
-        <Route path="/shop" element={<Home />} />
+        {/* <Route path="/shop" element={<Home />} /> */}
         <Route path="/shop/product/:id" element={<ProductDetails />} />
         <Route path="/shop/cart" element={<Cart />} />
         <Route path="/shop/checkout" element={<Checkout />} />
