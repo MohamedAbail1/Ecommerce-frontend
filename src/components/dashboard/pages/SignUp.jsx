@@ -6,19 +6,48 @@ const SignUp = () => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Validation simple
     if (password !== confirmPassword) {
       setError("Les mots de passe ne correspondent pas.");
+      setSuccess('');
       return;
     }
 
-    // Logique pour enregistrer l'utilisateur
-    console.log({ fullName, email, password });
-    setError('');
+    try {
+      const response = await fetch('http://localhost:8000/api/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: fullName,
+          email,
+          password,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setSuccess('Inscription réussie !');
+        setError('');
+        setFullName('');
+        setEmail('');
+        setPassword('');
+        setConfirmPassword('');
+      } else {
+        setError(data.message || 'Erreur lors de l’inscription.');
+        setSuccess('');
+      }
+    } catch (err) {
+      console.error(err);
+      setError('Erreur réseau. Veuillez réessayer plus tard.');
+      setSuccess('');
+    }
   };
 
   return (
@@ -29,10 +58,10 @@ const SignUp = () => {
       >
         <h2 className="text-2xl mb-6 text-center font-bold">S'inscrire</h2>
 
-        {/* Affichage des erreurs */}
+        {/* Affichage des erreurs ou du succès */}
         {error && <p className="text-red-500 mb-4 text-center">{error}</p>}
+        {success && <p className="text-green-500 mb-4 text-center">{success}</p>}
 
-        {/* Nom complet */}
         <input
           type="text"
           placeholder="Nom complet"
@@ -42,7 +71,6 @@ const SignUp = () => {
           required
         />
 
-        {/* Email */}
         <input
           type="email"
           placeholder="Email"
@@ -52,7 +80,6 @@ const SignUp = () => {
           required
         />
 
-        {/* Mot de passe */}
         <input
           type="password"
           placeholder="Mot de passe"
@@ -62,7 +89,6 @@ const SignUp = () => {
           required
         />
 
-        {/* Confirmation du mot de passe */}
         <input
           type="password"
           placeholder="Confirmer le mot de passe"
@@ -72,7 +98,6 @@ const SignUp = () => {
           required
         />
 
-        {/* Bouton d'inscription */}
         <button
           type="submit"
           className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
@@ -80,15 +105,11 @@ const SignUp = () => {
           S'inscrire
         </button>
 
-        {/* Lien vers la page de connexion */}
         <p className="mt-4 text-center">
           Déjà un compte ?{' '}
-         
           <a href="/login" className="text-blue-500 hover:text-blue-600">
             Connectez-vous
           </a>
-         
-          
         </p>
       </form>
     </div>

@@ -16,7 +16,7 @@ export default function Sidebar() {
   return (
     <div className="w-64 bg-gray-800 text-white p-4">
       <nav className="space-y-4">
-        <Link to="/" className="flex items-center hover:bg-gray-700 p-2 rounded">
+        <Link to="/Dashboard" className="flex items-center hover:bg-gray-700 p-2 rounded">
           <FontAwesomeIcon icon={faHome} className="h-5 w-5 mr-3" />
           Dashboard
         </Link>
