@@ -82,7 +82,10 @@ export default function Users() {
       });
   
       if (response.ok) {
-        toast.success("Utilisateur supprimé avec succès !");
+        toast.success("Utilisateur supprimé avec succès !", {
+          position: "top-right",
+          autoClose: 10000,
+        });
         setFilteredUsers(filteredUsers.filter((user) => user.id !== id)); // Mettre à jour la liste après suppression
       } else {
         toast.error("Échec de la suppression de l'utilisateur.");

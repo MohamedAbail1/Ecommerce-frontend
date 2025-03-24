@@ -21,7 +21,7 @@ export default function ProductList() {
 
   const fetchProducts = async () => {
     try {
-      const response = await axios.get('http://127.0.0.1:8000/api/admin/products', {
+      const response = await axios.get('http://127.0.0.1:8000/api/products', {
         headers: {
           Authorization: `Bearer ${token}`,
         },
