@@ -32,7 +32,7 @@ function App() {
         <Route path="/shop/about" element={<Layout><Aprop /></Layout>} />
         <Route path="/shop/Contact" element={<Layout><Contacter /></Layout>} />
         <Route path="/login" element= {<Layout><Login /></Layout>}/>
-        <Route path="/shop" element= {<LayoutAcceuil><Home /></LayoutAcceuil>}/>
+        <Route path="/" element= {<LayoutAcceuil><Home /></LayoutAcceuil>}/>
       {/*  */}
      
 
@@ -54,7 +54,7 @@ function App() {
                 <Sidebar />
                 <div className="p-6 w-full bg-gray-100 min-h-screen">
                   <Routes>
-                    <Route path="/" element={<Dashboard />} />
+                    <Route path="/Dashboard" element={<Dashboard />} />
                     <Route path="/users" element={<Users />} />
                     <Route path="/products" element={<Products />} />
                     <Route path="/categories" element={<Categories />} />

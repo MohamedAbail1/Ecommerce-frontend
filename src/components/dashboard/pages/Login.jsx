@@ -24,7 +24,7 @@ const Login = () => {
       if (user && user.role === 'admin') {  // Correction ici : on utilise "role" et non "is_admin"
         localStorage.setItem("token", token);
         localStorage.setItem("user", JSON.stringify(user)); // Sauvegarder l'utilisateur dans localStorage
-        navigate("/"); // Redirection vers la page d'accueil (Dashboard)
+        navigate("/Dashboard"); // Redirection vers la page d'accueil (Dashboard)
       } else {
         setError("Vous n'êtes pas autorisé à accéder au dashboard.");
       }
