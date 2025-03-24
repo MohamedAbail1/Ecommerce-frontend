@@ -2,7 +2,7 @@
 import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-
+import { Link } from 'react-router-dom';
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -63,6 +63,14 @@ const Login = () => {
         >
           Connexion
         </button>
+  
+        {/* Lien vers la page d'inscription */}
+        <p className="mt-4 text-center">
+          Pas encore inscrit ?{' '}
+          <Link to="/SignUp" className="text-blue-500 hover:text-blue-600">
+            Créez un compte
+          </Link>
+        </p>
       </form>
     </div>
   );

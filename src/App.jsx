@@ -20,18 +20,20 @@ import Contacter from './components/contacterNous/contacter';
 import Navbar from './components/Acceuil/NavBar';
 import Footer  from './components/Acceuil/Footer'
 import Layout from './components/Acceuil/Layout';
-import Fet from './components/Acceuil/Features';
+// import Fet from './components/Acceuil/Features';
 import LayoutAcceuil from './components/Acceuil/Acceuil';
+import SignUp from './components/dashboard/pages/SignUp';
 function App() {
   return (
     <Router>
       
       <Routes>
         {/* acceuil */}
-        <Route path="/shop/Fet" element={<Fet />} />
+        {/* <Route path="/shop/Fet" element={<Fet />} /> */}
         <Route path="/shop/about" element={<Layout><Aprop /></Layout>} />
         <Route path="/shop/Contact" element={<Layout><Contacter /></Layout>} />
         <Route path="/login" element= {<Layout><Login /></Layout>}/>
+        <Route path="/SignUp" element= {<Layout><SignUp /></Layout>}/>
         <Route path="/" element= {<LayoutAcceuil><Home /></LayoutAcceuil>}/>
       {/*  */}
      

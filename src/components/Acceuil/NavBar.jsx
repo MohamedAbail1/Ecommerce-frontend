@@ -21,7 +21,7 @@ const Navbar = () => {
               <Link to="/" className="text-blue-600 font-bold text-2xl">ShopFlex</Link>
             </div>
             <div className="hidden md:ml-10 md:flex md:space-x-8">
-              <Link to="/shop" className="px-3 py-2 text-gray-700 hover:text-blue-600 font-medium">Accueil</Link>
+              <Link to="/" className="px-3 py-2 text-gray-700 hover:text-blue-600 font-medium">Accueil</Link>
               {/* <Link to="/products" className="px-3 py-2 text-gray-700 hover:text-blue-600 font-medium">Produits</Link> */}
               {/* <Link to="/categories" className="px-3 py-2 text-gray-700 hover:text-blue-600 font-medium">Catégories</Link> */}
               <Link to="/shop/about" className="px-3 py-2 text-gray-700 hover:text-blue-600 font-medium">À propos</Link>

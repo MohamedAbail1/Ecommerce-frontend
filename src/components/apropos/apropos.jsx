@@ -1,5 +1,5 @@
 import { useState } from 'react';
-
+import { Link } from 'react-router-dom';
 export default function AboutPage() {
   const [activeTab, setActiveTab] = useState('histoire');
   
@@ -158,10 +158,11 @@ export default function AboutPage() {
               <p className="text-gray-600 mb-4">
                 Vous avez des questions sur notre entreprise ou nos produits ? N'hésitez pas à nous contacter.
               </p>
-              <button style={{ backgroundColor: "#27548A" }} className="w-full text-white py-2 px-4 rounded-md hover:opacity-80 transition duration-300">
-                Nous contacter
-                </button>
-
+              <Link to="/contact">
+  <button style={{ backgroundColor: "#27548A" }} className="w-full text-white py-2 px-4 rounded-md hover:opacity-80 transition duration-300">
+    Nous contacter
+  </button>
+</Link>
             </div>
           </div>
         </div>
