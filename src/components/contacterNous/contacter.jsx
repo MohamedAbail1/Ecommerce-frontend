@@ -16,16 +16,33 @@ export default function ContactForm() {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Données soumises:', formData);
-    // Ici vous intégreriez normalement l'envoi des données à votre backend
-    setSubmitted(true);
-    // Réinitialiser le formulaire après 3 secondes
-    setTimeout(() => {
-      setFormData({ name: '', email: '', message: '' });
-      setSubmitted(false);
-    }, 3000);
+    
+    try {
+      const response = await fetch('http://127.0.0.1:8000/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (response.ok) {
+        console.log('Données soumises:', formData);
+        setSubmitted(true);
+
+        // Réinitialiser le formulaire après 3 secondes
+        setTimeout(() => {
+          setFormData({ name: '', email: '', message: '' });
+          setSubmitted(false);
+        }, 3000);
+      } else {
+        console.error('Erreur lors de l\'envoi des données');
+      }
+    } catch (error) {
+      console.error('Une erreur s\'est produite:', error);
+    }
   };
 
   return (
