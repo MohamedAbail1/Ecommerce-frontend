@@ -1,12 +1,14 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
-import { FaTrashAlt, FaEye } from "react-icons/fa";
+import { FaTrashAlt, FaEye, FaSearch } from "react-icons/fa";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 export default function Users() {
   const [users, setUsers] = useState([]);
+  const [filteredUsers, setFilteredUsers] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate(); // Pour la redirection
@@ -32,6 +34,7 @@ export default function Users() {
       .then(data => {
         const filteredUsers = data.filter(user => user.role === 'user');
         setUsers(filteredUsers);
+        setFilteredUsers(filteredUsers);
         setLoading(false);
       })
       .catch(error => {
@@ -39,6 +42,18 @@ export default function Users() {
         setLoading(false);
       });
   }, [navigate]);
+
+  // Fonction pour gérer la recherche
+  const handleSearch = (event) => {
+    const value = event.target.value.toLowerCase();
+    setSearchTerm(value);
+
+    const filtered = users.filter((user) => {
+      return user.name.toLowerCase().includes(value) || user.email.toLowerCase().includes(value);
+    });
+
+    setFilteredUsers(filtered);
+  };
 
   // Fonction pour supprimer un utilisateur
   const handleDelete = (id) => {
@@ -50,7 +65,7 @@ export default function Users() {
         <p>Voulez-vous vraiment supprimer cet utilisateur ?</p>
         <div style={{ display: "flex", gap: "10px", justifyContent: "center" }}>
           <button onClick={() => confirmDelete(id, token)} style={{ background: "red", color: "white", border: "none", padding: "5px 10px", cursor: "pointer" }}>Oui</button>
-          <button onClick={() => toast.dismiss(toastId)} style={{ background: "gray", color: "white", border: "none", padding: "5px 10px", cursor: "pointer" }}>Non</button>
+          <button onClick={() => toast.dismiss()} style={{ background: "gray", color: "white", border: "none", padding: "5px 10px", cursor: "pointer" }}>Non</button>
         </div>
       </div>,
       { autoClose: false, closeOnClick: false }
@@ -68,7 +83,7 @@ export default function Users() {
   
       if (response.ok) {
         toast.success("Utilisateur supprimé avec succès !");
-        // Mettre à jour la liste des utilisateurs si nécessaire
+        setFilteredUsers(filteredUsers.filter((user) => user.id !== id)); // Mettre à jour la liste après suppression
       } else {
         toast.error("Échec de la suppression de l'utilisateur.");
       }
@@ -115,6 +130,18 @@ export default function Users() {
       <Header title="Users" />
       <ToastContainer /> {/* Ajout du ToastContainer ici */}
       <div className="bg-white p-4 rounded-lg shadow">
+        {/* Barre de recherche avec icône de loupe */}
+        <div className="relative mb-4">
+          <input
+            type="text"
+            placeholder="Rechercher un utilisateur..."
+            value={searchTerm}
+            onChange={handleSearch}
+            className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg w-full"
+          />
+          <FaSearch className="absolute left-3 top-2.5 text-gray-500" />
+        </div>
+        
         <table className="w-full text-left table-auto">
           <thead>
             <tr>
@@ -125,7 +152,7 @@ export default function Users() {
             </tr>
           </thead>
           <tbody>
-            {users.map(user => (
+            {filteredUsers.map(user => (
               <tr key={user.id}>
                 <td className="px-4 py-2">{user.id}</td>
                 <td className="px-4 py-2">{user.name}</td>
