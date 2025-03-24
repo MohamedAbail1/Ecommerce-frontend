@@ -34,11 +34,21 @@ export default function Dashboard() {
         console.error("Erreur lors de la récupération des utilisateurs:", error);
       });
 
-    // Vous pouvez ajouter ici d'autres appels d'API pour récupérer les produits, commandes et revenus
-    // Par exemple :
-    // fetch("http://localhost:8000/api/admin/products", { ... })
-    // fetch("http://localhost:8000/api/admin/orders", { ... })
-    // fetch("http://localhost:8000/api/admin/revenue", { ... })
+      fetch("http://localhost:8000/api/products", {
+        method: "GET",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+        },
+      })
+        .then(response => response.json())
+        .then(data => {
+          setProductsCount(data.length);  // Nombre de produits récupérés
+          setLoading(false);
+        })
+        .catch(error => {
+          console.error("Erreur lors de la récupération des produits:", error);
+          setLoading(false);
+        });
   }, []);
 
   return (
