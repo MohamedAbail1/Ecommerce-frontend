@@ -27,7 +27,7 @@ export default function ContactForm() {
         },
         body: JSON.stringify(formData),
       });
-
+      
       if (response.ok) {
         console.log('Données soumises:', formData);
         setSubmitted(true);
