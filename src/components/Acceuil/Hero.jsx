@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-
+import { Link } from 'react-router-dom';
 const Hero = () => {
   const images = [
     'https://m.media-amazon.com/images/I/61cTi9MBqOL._AC_SL1500_.jpg', // Remplace par tes images
@@ -38,9 +38,12 @@ const Hero = () => {
           <p className="text-xl mb-6">
             Découvrez notre nouvelle collection et profitez de nos offres exceptionnelles sur des milliers d'articles.
           </p>
+          <Link to="/login">
           <button className="bg-blue-500 py-2 px-6 rounded text-white hover:bg-blue-600">
             Acheter Maintenant
           </button>
+          </Link>
+         
         </div>
       </div>
     </div>
