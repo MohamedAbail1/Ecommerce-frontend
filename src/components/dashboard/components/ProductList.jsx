@@ -61,68 +61,126 @@ export default function ProductList() {
   };
 
   return (
-    <div className="space-y-6 p-6 bg-gradient-to-br from-blue-50 to-purple-100 min-h-screen">
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-2xl font-bold text-gray-800">🛒 Product List</h2>
-        <button
-          onClick={handleAddClick}
-          className="bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-6 rounded-xl shadow transition duration-300"
-        >
-          ➕ Add Product
-        </button>
-      </div>
-
-      {showForm && (
-        <ProductForm
-          product={selectedProduct}
-          onSubmit={fetchProducts}
-          onClose={handleCloseForm}
-        />
-      )}
-
-      <div className="bg-white p-6 rounded-2xl shadow-xl overflow-x-auto">
-        <table className="w-full text-sm text-left text-gray-700">
-          <thead className="text-gray-600 uppercase bg-purple-100 rounded-xl">
-            <tr>
-              <th className="px-4 py-3">ID</th>
-              <th className="px-4 py-3">Name</th>
-              <th className="px-4 py-3">Price</th>
-              <th className="px-4 py-3">Stock</th>
-              <th className="px-4 py-3">Category</th>
-              <th className="px-4 py-3 text-center">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {products.map((product, idx) => (
-              <tr
-                key={product.id}
-                className={`border-b ${idx % 2 === 0 ? 'bg-white' : 'bg-purple-50'} hover:bg-purple-100 transition`}
-              >
-                <td className="px-4 py-3">{product.id}</td>
-                <td className="px-4 py-3 font-medium">{product.name}</td>
-                <td className="px-4 py-3">${product.price}</td>
-                <td className="px-4 py-3">{product.stock}</td>
-                <td className="px-4 py-3">{product.category_id}</td>
-                <td className="px-4 py-3">
-                  <div className="flex justify-center space-x-2">
-                    <button
-                      onClick={() => handleEditClick(product)}
-                      className="bg-green-500 hover:bg-green-600 text-white px-4 py-1 rounded-lg text-sm shadow"
-                    >
-                      ✏️ Edit
-                    </button>
-                    <button
-                      onClick={() => deleteProduct(product.id)}
-                      className="bg-red-500 hover:bg-red-600 text-white px-4 py-1 rounded-lg text-sm shadow"
-                    >
-                      🗑️ Delete
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 p-4 md:p-8">
+      <div className="max-w-7xl mx-auto space-y-6">
+        {/* Header with Add Button */}
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div>
+            <h1 className="text-2xl md:text-3xl font-bold text-gray-800 flex items-center gap-2">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+              </svg>
+              Product Inventory
+            </h1>
+            <p className="text-sm text-gray-500 mt-1">Manage your product catalog</p>
+          </div>
+          <button
+            onClick={handleAddClick}
+            className="flex items-center gap-2 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-medium py-2.5 px-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+            </svg>
+            Add Product
+          </button>
+        </div>
+  
+        {/* Product Form Modal */}
+        {showForm && (
+          <ProductForm
+            product={selectedProduct}
+            onSubmit={fetchProducts}
+            onClose={handleCloseForm}
+          />
+        )}
+  
+        {/* Products Table */}
+        <div className="bg-white rounded-2xl shadow-md overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gradient-to-r from-purple-50 to-blue-50">
+                <tr>
+                  <th scope="col" className="px-6 py-4 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
+                    ID
+                  </th>
+                  <th scope="col" className="px-6 py-4 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
+                    Product
+                  </th>
+                  <th scope="col" className="px-6 py-4 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
+                    Price
+                  </th>
+                  <th scope="col" className="px-6 py-4 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
+                    Stock
+                  </th>
+                  <th scope="col" className="px-6 py-4 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
+                    Category
+                  </th>
+                  <th scope="col" className="px-6 py-4 text-right text-xs font-medium text-gray-600 uppercase tracking-wider">
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {products.length > 0 ? (
+                  products.map((product) => (
+                    <tr key={product.id} className="hover:bg-gray-50 transition-colors">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                        #{product.id}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm font-medium text-gray-900">{product.name}</div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-semibold">
+                        ${parseFloat(product.price).toFixed(2)}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${product.stock > 10 ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
+                          {product.stock} in stock
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {product.category_id}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                        <div className="flex justify-end space-x-2">
+                          <button
+                            onClick={() => handleEditClick(product)}
+                            className="text-blue-600 hover:text-blue-900 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors"
+                          >
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => deleteProduct(product.id)}
+                            className="text-red-600 hover:text-red-900 bg-red-50 hover:bg-red-100 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors"
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="6" className="px-6 py-12 text-center">
+                      <div className="flex flex-col items-center justify-center text-gray-400">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                        </svg>
+                        <p className="mt-2 text-sm font-medium text-gray-500">No products found</p>
+                        <button
+                          onClick={handleAddClick}
+                          className="mt-4 text-purple-600 hover:text-purple-800 text-sm font-medium"
+                        >
+                          Add your first product
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
     </div>
   );

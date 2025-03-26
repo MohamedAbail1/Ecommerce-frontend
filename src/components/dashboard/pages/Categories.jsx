@@ -100,75 +100,111 @@ export default function Categories() {
   };
 
   return (
-    <div>
-      <Header title="Categories" />
+    <div className="max-w-4xl mx-auto px-4 py-8">
+      <Header title="Categories" className="mb-8" />
       
-      {/* Formulaire d'ajout de catégorie */}
-      <div className="mb-4">
-        <input
-          type="text"
-          value={newCategory}
-          onChange={(e) => setNewCategory(e.target.value)}
-          placeholder="New Category Name"
-          className="p-2 border rounded"
-        />
-        <button onClick={addCategory} className="ml-2 p-2 bg-blue-500 text-white rounded">Add Category</button>
+      {/* Category Add Form */}
+      <div className="mb-8 bg-white rounded-lg shadow-sm p-6">
+        <h2 className="text-lg font-semibold text-gray-800 mb-4">Add New Category</h2>
+        <div className="flex gap-3">
+          <input
+            type="text"
+            value={newCategory}
+            onChange={(e) => setNewCategory(e.target.value)}
+            placeholder="Enter category name"
+            className="flex-1 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            onKeyPress={(e) => e.key === 'Enter' && addCategory()}
+          />
+          <button 
+            onClick={addCategory} 
+            className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md transition duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+          >
+            Add
+          </button>
+        </div>
       </div>
       
-      {/* Liste des catégories */}
-      <div className="bg-white p-4 rounded-lg shadow">
-        <table className="w-full text-left table-auto">
-          <thead>
-            <tr>
-              <th className="px-4 py-2">ID</th>
-              <th className="px-4 py-2">Category</th>
-              <th className="px-4 py-2">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {categories.map((category) => (
-              <tr key={category.id}>
-                <td className="px-4 py-2">{category.id}</td>
-                <td className="px-4 py-2">
-                  {editCategory === category.id ? (
-                    <input
-                      type="text"
-                      value={editedName}
-                      onChange={(e) => setEditedName(e.target.value)}
-                      className="p-2 border rounded"
-                    />
-                  ) : (
-                    category.name
-                  )}
-                </td>
-                <td className="px-4 py-2">
-                  {editCategory === category.id ? (
-                    <button
-                      onClick={() => updateCategory(category.id)}
-                      className="p-2 bg-green-500 text-white rounded"
-                    >
-                      Save
-                    </button>
-                  ) : (
-                    <button
-                      onClick={() => setEditCategory(category.id)}
-                      className="p-2 bg-yellow-500 text-white rounded"
-                    >
-                      Edit
-                    </button>
-                  )}
-                  <button
-                    onClick={() => deleteCategory(category.id)}
-                    className="ml-2 p-2 bg-red-500 text-white rounded"
-                  >
-                    Delete
-                  </button>
-                </td>
+      {/* Categories List */}
+      <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-gray-50">
+              <tr>
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  ID
+                </th>
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Category
+                </th>
+                <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Actions
+                </th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {categories.map((category) => (
+                <tr key={category.id} className="hover:bg-gray-50 transition-colors">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                    {category.id}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {editCategory === category.id ? (
+                      <input
+                        type="text"
+                        value={editedName}
+                        onChange={(e) => setEditedName(e.target.value)}
+                        className="w-full px-3 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        autoFocus
+                      />
+                    ) : (
+                      <span className="font-medium text-gray-800">{category.name}</span>
+                    )}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                    <div className="flex justify-end space-x-2">
+                      {editCategory === category.id ? (
+                        <button
+                          onClick={() => updateCategory(category.id)}
+                          className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                        >
+                          Save
+                        </button>
+                      ) : (
+                        <button
+                          onClick={() => {
+                            setEditCategory(category.id);
+                            setEditedName(category.name);
+                          }}
+                          className="inline-flex items-center px-3 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded-md text-white bg-orange-400 hover:bg-orange-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                        >
+                          Edit
+                        </button>
+                      )}
+                      <button
+                        onClick={() => deleteCategory(category.id)}
+                        className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
+  
+      {/* Empty state */}
+      {categories.length === 0 && (
+        <div className="mt-8 text-center py-12 bg-gray-50 rounded-lg">
+          <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+          </svg>
+          <h3 className="mt-2 text-sm font-medium text-gray-900">No categories</h3>
+          <p className="mt-1 text-sm text-gray-500">Get started by adding a new category.</p>
+        </div>
+      )}
     </div>
   );
 }
