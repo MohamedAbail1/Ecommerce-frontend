@@ -16,22 +16,30 @@ const Login = () => {
         email,
         password,
       });
-
+  
       const user = res.data.user;
       const token = res.data.token;
-
-      // Vérifier si l'utilisateur est un admin
-      if (user && user.role === 'admin') {  // Correction ici : on utilise "role" et non "is_admin"
+  
+      if (user && token) {
         localStorage.setItem("token", token);
-        localStorage.setItem("user", JSON.stringify(user)); // Sauvegarder l'utilisateur dans localStorage
-        navigate("/Dashboard"); // Redirection vers la page d'accueil (Dashboard)
+        localStorage.setItem("user", JSON.stringify(user));
+  
+        // Redirection selon le rôle
+        if (user.role === 'admin') {
+          navigate("/Dashboard");
+        } else if (user.role === 'user') {
+          navigate("/");
+        } else {
+          setError("Rôle non reconnu.");
+        }
       } else {
-        setError("Vous n'êtes pas autorisé à accéder au dashboard.");
+        setError("Informations de connexion invalides.");
       }
     } catch (err) {
       setError("Email ou mot de passe incorrect.");
     }
   };
+  
 
   return (
     <div className="flex justify-center items-center h-screen bg-gray-100">
