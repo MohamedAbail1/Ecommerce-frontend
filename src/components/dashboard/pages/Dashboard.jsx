@@ -3,6 +3,11 @@ import Header from "../components/Header";
 import StatsCards from "../components/StatsCards";
 import { faUsers, faShoppingBag, faClipboardList, faBoxOpen, faBell } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Chart as ChartJS, registerables } from 'chart.js';
+import { Bar, Pie, Line } from 'react-chartjs-2';
+
+// Enregistrer les composants nécessaires de Chart.js
+ChartJS.register(...registerables);
 
 export default function Dashboard() {
   const [usersCount, setUsersCount] = useState(0);
@@ -10,6 +15,7 @@ export default function Dashboard() {
   const [ordersCount, setOrdersCount] = useState(0);
   const [revenue, setRevenue] = useState(0);
   const [pendingOrdersCount, setPendingOrdersCount] = useState(0);
+  const [ordersData, setOrdersData] = useState([]);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -60,24 +66,59 @@ export default function Dashboard() {
       .then(response => response.json())
       .then(data => {
         setOrdersCount(data.length);
+        setOrdersData(data); // Stocker les données pour les graphiques
   
         // Compter les commandes en attente
         const pendingOrders = data.filter(order => order.status === 'pending');
         setPendingOrdersCount(pendingOrders.length);
   
-        // Calculer le revenu total à partir des commandes validées ou complétées
+        // Calculer le revenu total
         const totalRevenue = data
             .filter(order => order.status === 'validated' || order.status === 'completed')
             .reduce((sum, order) => sum + parseFloat(order.total_amount), 0);
-
   
         setRevenue(totalRevenue);
       })
       .catch(error => {
         console.error("Erreur lors de la récupération des commandes:", error);
       });
-  
   }, []);
+
+  // Préparer les données pour les graphiques
+  const ordersByStatus = {
+    labels: ['Pending', 'Validated', 'Completed', 'Cancelled'],
+    datasets: [
+      {
+        label: 'Orders by Status',
+        data: [
+          ordersData.filter(order => order.status === 'pending').length,
+          ordersData.filter(order => order.status === 'validated').length,
+          ordersData.filter(order => order.status === 'completed').length,
+          ordersData.filter(order => order.status === 'cancelled').length,
+        ],
+        backgroundColor: [
+          'rgba(255, 206, 86, 0.7)',
+          'rgba(75, 192, 192, 0.7)',
+          'rgba(54, 162, 235, 0.7)',
+          'rgba(255, 99, 132, 0.7)',
+        ],
+      },
+    ],
+  };
+
+  // Exemple de données pour un graphique de revenus mensuels (à adapter selon vos données)
+  const monthlyRevenue = {
+    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+    datasets: [
+      {
+        label: 'Revenue ($)',
+        data: [1200, 1900, 1500, 2000, 1800, 2500],
+        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+        borderColor: 'rgba(75, 192, 192, 1)',
+        borderWidth: 1,
+      },
+    ],
+  };
 
   return (
     <div>
@@ -112,11 +153,36 @@ export default function Dashboard() {
         </div>
       )}
       
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         <StatsCards title="Users" value={usersCount} icon={faUsers} />
         <StatsCards title="Products" value={productsCount} icon={faShoppingBag} />
         <StatsCards title="Orders" value={ordersCount} icon={faClipboardList} />
         <StatsCards title="Revenue" value={`$${revenue}`} icon={faBoxOpen} />
+      </div>
+
+      {/* Section des graphiques */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+        <div className="bg-white p-6 rounded-lg shadow">
+          <h2 className="text-xl font-semibold mb-4">Orders by Status</h2>
+          <div className="h-80">
+            <Pie data={ordersByStatus} options={{ maintainAspectRatio: false }} />
+          </div>
+        </div>
+        
+        <div className="bg-white p-6 rounded-lg shadow">
+          <h2 className="text-xl font-semibold mb-4">Monthly Revenue</h2>
+          <div className="h-80">
+            <Bar data={monthlyRevenue} options={{ maintainAspectRatio: false }} />
+          </div>
+        </div>
+      </div>
+
+      {/* Un autre graphique en pleine largeur */}
+      <div className="bg-white p-6 rounded-lg shadow mb-8">
+        <h2 className="text-xl font-semibold mb-4">Revenue Trend</h2>
+        <div className="h-96">
+          <Line data={monthlyRevenue} options={{ maintainAspectRatio: false }} />
+        </div>
       </div>
     </div>
   );
