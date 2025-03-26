@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { FaEye, FaSearch, FaTimes } from "react-icons/fa";
+import { FaEye, FaSearch, FaTimes, FaCheck, FaBan } from "react-icons/fa";
 import Header from "../components/Header";
 
 export default function Orders() {
@@ -10,8 +10,18 @@ export default function Orders() {
   const [error, setError] = useState(null);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [showConfirmValidate, setShowConfirmValidate] = useState(false);
+  const [showConfirmCancel, setShowConfirmCancel] = useState(false);
+  const [orderToUpdate, setOrderToUpdate] = useState(null);
+
+  
 
   useEffect(() => {
+    fetchOrders();
+  }, []);
+
+  const fetchOrders = () => {
     fetch("http://localhost:8000/api/admin/orders", {
       headers: {
         Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -24,15 +34,22 @@ export default function Orders() {
         return response.json();
       })
       .then((data) => {
-        setOrders(data);
-        setFilteredOrders(data);
+        // Trier les commandes pour mettre "pending" en premier
+        const sortedOrders = [...data].sort((a, b) => {
+          if (a.status === 'pending' && b.status !== 'pending') return -1;
+          if (a.status !== 'pending' && b.status === 'pending') return 1;
+          return 0;
+        });
+        
+        setOrders(sortedOrders);
+        setFilteredOrders(sortedOrders);
         setLoading(false);
       })
       .catch((error) => {
         setError(error.message);
         setLoading(false);
       });
-  }, []);
+  };
 
   const handleSearch = (event) => {
     const value = event.target.value.toLowerCase();
@@ -45,7 +62,14 @@ export default function Orders() {
       );
     });
 
-    setFilteredOrders(filtered);
+    // Trier les résultats filtrés pour mettre "pending" en premier
+    const sortedFiltered = [...filtered].sort((a, b) => {
+      if (a.status === 'pending' && b.status !== 'pending') return -1;
+      if (a.status !== 'pending' && b.status === 'pending') return 1;
+      return 0;
+    });
+
+    setFilteredOrders(sortedFiltered);
   };
 
   const handleView = (order) => {
@@ -56,6 +80,47 @@ export default function Orders() {
   const closeModal = () => {
     setShowModal(false);
     setSelectedOrder(null);
+  };
+
+  const handleValidateClick = (order) => {
+    setOrderToUpdate(order);
+    setShowConfirmValidate(true);
+  };
+
+  const handleCancelClick = (order) => {
+    setOrderToUpdate(order);
+    setShowConfirmCancel(true);
+  };
+
+  const confirmUpdateStatus = async (newStatus) => {
+    setIsUpdating(true);
+    try {
+      const response = await fetch(`http://localhost:8000/api/admin/orders/${orderToUpdate.id}/status`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+        body: JSON.stringify({ status: newStatus }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to update order status");
+      }
+
+      fetchOrders();
+      if (selectedOrder?.id === orderToUpdate.id) {
+        closeModal();
+      }
+    } catch (error) {
+      console.error("Error updating order status:", error);
+      alert("Error updating order status: " + error.message);
+    } finally {
+      setIsUpdating(false);
+      setShowConfirmValidate(false);
+      setShowConfirmCancel(false);
+      setOrderToUpdate(null);
+    }
   };
 
   if (loading) return <p>Loading...</p>;
@@ -97,7 +162,7 @@ export default function Orders() {
                     <td className="px-4 py-3">{order.user?.name || "Unknown"}</td>
                     <td className="px-4 py-3">${order.total_amount}</td>
                     <td className="px-4 py-3">
-                    <span className={`px-2 py-1 rounded-full text-xs capitalize ${
+                      <span className={`px-2 py-1 rounded-full text-xs capitalize ${
                         order.status === 'completed' ? 'bg-green-100 text-green-800' :
                         order.status === 'validated' ? 'bg-blue-100 text-blue-800' :
                         order.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
@@ -107,7 +172,7 @@ export default function Orders() {
                         {order.status}
                       </span>
                     </td>
-                    <td className="px-4 py-3">
+                    <td className="px-4 py-3 flex space-x-2">
                       <button
                         onClick={() => handleView(order)}
                         className="text-blue-600 hover:text-blue-800 transition p-2 rounded-full hover:bg-blue-50"
@@ -115,6 +180,26 @@ export default function Orders() {
                       >
                         <FaEye className="w-5 h-5" />
                       </button>
+                      {order.status === 'pending' && (
+                        <>
+                          <button
+                            onClick={() => handleValidateClick(order)}
+                            className="text-green-600 hover:text-green-800 transition p-2 rounded-full hover:bg-green-50"
+                            title="Validate order"
+                            disabled={isUpdating}
+                          >
+                            <FaCheck className="w-5 h-5" />
+                          </button>
+                          <button
+                            onClick={() => handleCancelClick(order)}
+                            className="text-red-600 hover:text-red-800 transition p-2 rounded-full hover:bg-red-50"
+                            title="Cancel order"
+                            disabled={isUpdating}
+                          >
+                            <FaBan className="w-5 h-5" />
+                          </button>
+                        </>
+                      )}
                     </td>
                   </tr>
                 ))}
@@ -127,7 +212,6 @@ export default function Orders() {
       {/* Modal pour afficher les détails de la commande */}
       {showModal && selectedOrder && (
         <div className="fixed inset-0 bg-gray-100/90 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-          {/* Effet de bruit simple */}
           <div className="absolute inset-0 bg-[radial-gradient(#00000010_1px,transparent_1px)] [background-size:16px_16px] opacity-20 pointer-events-none"></div>
           
           <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto relative border border-gray-200">
@@ -154,7 +238,15 @@ export default function Orders() {
                 </div>
                 <div>
                   <p className="text-sm text-gray-500 mb-1">Status</p>
-                  <p className="font-medium capitalize">{selectedOrder.status}</p>
+                  <p className={`font-medium capitalize ${
+                    selectedOrder.status === 'completed' ? 'text-green-600' :
+                    selectedOrder.status === 'validated' ? 'text-blue-600' :
+                    selectedOrder.status === 'pending' ? 'text-yellow-600' :
+                    selectedOrder.status === 'cancelled' ? 'text-red-600' :
+                    'text-gray-600'
+                  }`}>
+                    {selectedOrder.status}
+                  </p>
                 </div>
                 <div>
                   <p className="text-sm text-gray-500 mb-1">Total Amount</p>
@@ -198,7 +290,27 @@ export default function Orders() {
                 </div>
               </div>
             </div>
-            <div className="border-t p-4 flex justify-end sticky bottom-0 bg-white">
+            <div className="border-t p-4 flex justify-between sticky bottom-0 bg-white">
+              {selectedOrder.status === 'pending' && (
+                <div className="flex space-x-2">
+                  <button
+                    onClick={() => handleValidateClick(selectedOrder)}
+                    className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded transition flex items-center space-x-2"
+                    disabled={isUpdating}
+                  >
+                    <FaCheck />
+                    <span>Validate Order</span>
+                  </button>
+                  <button
+                    onClick={() => handleCancelClick(selectedOrder)}
+                    className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded transition flex items-center space-x-2"
+                    disabled={isUpdating}
+                  >
+                    <FaBan />
+                    <span>Cancel Order</span>
+                  </button>
+                </div>
+              )}
               <button
                 onClick={closeModal}
                 className="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded transition text-gray-700"
@@ -209,6 +321,68 @@ export default function Orders() {
           </div>
         </div>
       )}
+
+        {showConfirmValidate && (
+          <div className="fixed inset-0 flex items-center justify-center p-4 z-50">
+            <div className="bg-white rounded-xl shadow-2xl p-6 max-w-md w-full border border-white/20 transform transition-all duration-300 scale-95 hover:scale-100">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="font-semibold text-xl text-gray-800">Confirmation</h3>
+                <button 
+                  onClick={() => setShowConfirmValidate(false)} 
+                  className="text-gray-500 hover:text-gray-700 transition-colors"
+                >
+                  <FaTimes className="w-5 h-5" />
+                </button>
+              </div>
+              <p className="text-gray-800">Are you sure you want to validate this order?</p>
+              <div className="flex justify-end space-x-4 mt-4">
+                <button
+                  onClick={() => confirmUpdateStatus("validated")}
+                  className="px-4 py-2 bg-green-600 text-white rounded-lg"
+                >
+                  Confirm
+                </button>
+                <button
+                  onClick={() => setShowConfirmValidate(false)}
+                  className="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {showConfirmCancel && (
+          <div className="fixed inset-0 flex items-center justify-center p-4 z-50">
+            <div className="bg-white rounded-xl shadow-2xl p-6 max-w-md w-full border border-white/20 transform transition-all duration-300 scale-95 hover:scale-100">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="font-semibold text-xl text-gray-800">Confirmation</h3>
+                <button 
+                  onClick={() => setShowConfirmCancel(false)} 
+                  className="text-gray-500 hover:text-gray-700 transition-colors"
+                >
+                  <FaTimes className="w-5 h-5" />
+                </button>
+              </div>
+              <p className="text-gray-800">Are you sure you want to cancel this order?</p>
+              <div className="flex justify-end space-x-4 mt-4">
+                <button
+                  onClick={() => confirmUpdateStatus("cancelled")}
+                  className="px-4 py-2 bg-red-600 text-white rounded-lg"
+                >
+                  Confirm
+                </button>
+                <button
+                  onClick={() => setShowConfirmCancel(false)}
+                  className="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
     </div>
   );
 }

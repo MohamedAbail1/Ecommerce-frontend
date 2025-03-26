@@ -1,13 +1,15 @@
 import { useEffect, useState } from "react";
 import Header from "../components/Header";
 import StatsCards from "../components/StatsCards";
-import { faUsers, faShoppingBag, faClipboardList, faBoxOpen } from '@fortawesome/free-solid-svg-icons';
+import { faUsers, faShoppingBag, faClipboardList, faBoxOpen, faBell } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 export default function Dashboard() {
-  const [usersCount, setUsersCount] = useState(0);  // Pour le nombre d'utilisateurs
-  const [productsCount, setProductsCount] = useState(0);  // Pour le nombre de produits
-  const [ordersCount, setOrdersCount] = useState(0);  // Pour le nombre de commandes
-  const [revenue, setRevenue] = useState(0);  // Pour les revenus
+  const [usersCount, setUsersCount] = useState(0);
+  const [productsCount, setProductsCount] = useState(0);
+  const [ordersCount, setOrdersCount] = useState(0);
+  const [revenue, setRevenue] = useState(0);
+  const [pendingOrdersCount, setPendingOrdersCount] = useState(0);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -26,9 +28,8 @@ export default function Dashboard() {
     })
       .then(response => response.json())
       .then(data => {
-        // Filtrer les utilisateurs ayant le rôle 'user'
         const usersWithRoleUser = data.filter(user => user.role === 'user');
-        setUsersCount(usersWithRoleUser.length);  // Nombre d'utilisateurs avec le rôle 'user'
+        setUsersCount(usersWithRoleUser.length);
       })
       .catch(error => {
         console.error("Erreur lors de la récupération des utilisateurs:", error);
@@ -43,7 +44,7 @@ export default function Dashboard() {
     })
       .then(response => response.json())
       .then(data => {
-        setProductsCount(data.length);  // Nombre de produits récupérés
+        setProductsCount(data.length);
       })
       .catch(error => {
         console.error("Erreur lors de la récupération des produits:", error);
@@ -58,7 +59,10 @@ export default function Dashboard() {
     })
       .then(response => response.json())
       .then(data => {
-        setOrdersCount(data.length);  // Nombre de commandes récupérées
+        setOrdersCount(data.length);
+        // Compter les commandes en attente
+        const pendingOrders = data.filter(order => order.status === 'pending');
+        setPendingOrdersCount(pendingOrders.length);
       })
       .catch(error => {
         console.error("Erreur lors de la récupération des commandes:", error);
@@ -68,6 +72,36 @@ export default function Dashboard() {
   return (
     <div>
       <Header title="Dashboard" />
+      
+      {/* Notification des commandes en attente */}
+      {pendingOrdersCount > 0 && (
+        <div className="mb-6 p-4 bg-yellow-50 border-l-4 border-yellow-400 rounded shadow-sm">
+          <div className="flex items-center">
+            <div className="flex-shrink-0">
+              <FontAwesomeIcon 
+                icon={faBell} 
+                className="h-5 w-5 text-yellow-400" 
+                aria-hidden="true"
+              />
+            </div>
+            <div className="ml-3">
+              <h3 className="text-sm font-medium text-yellow-800">
+                Vous avez {pendingOrdersCount} commande(s) en attente de confirmation
+              </h3>
+              <div className="mt-2 text-sm text-yellow-700">
+                <p>
+                  Veuillez valider ou annuler ces commandes dans la section <a 
+                  href="/orders" 
+                  className="underline font-semibold text-yellow-800 hover:text-yellow-900">
+                    Commandes
+                  </a>.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+      
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatsCards title="Users" value={usersCount} icon={faUsers} />
         <StatsCards title="Products" value={productsCount} icon={faShoppingBag} />
