@@ -48,17 +48,18 @@ export default function ContactForm() {
   return (
     <div className="min-h-screen bg-gray-100 py-12 px-4 sm:px-6 lg:px-8 flex flex-col items-center">
       <div className="max-w-md w-full bg-white rounded-lg shadow-md p-8">
-        <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">Contactez-nous</h2>
+        <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">Service Client - Contactez-nous</h2>
+        <p className="text-center text-gray-600 mb-6">Vous avez une question sur votre commande ou nos produits ? Notre équipe est là pour vous aider.</p>
         
         {submitted ? (
           <div className="text-center py-4 px-6 bg-green-100 text-green-700 rounded-md mb-4">
-            Merci pour votre message ! Nous vous répondrons dans les plus brefs délais.
+            Merci pour votre message ! Notre service client vous répondra dans les 24 heures.
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
               <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
-                Nom
+                Nom complet
               </label>
               <input
                 type="text"
@@ -68,12 +69,13 @@ export default function ContactForm() {
                 onChange={handleChange}
                 required
                 className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="Votre nom complet"
               />
             </div>
             
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                Email
+                Email (pour la réponse)
               </label>
               <input
                 type="email"
@@ -83,12 +85,13 @@ export default function ContactForm() {
                 onChange={handleChange}
                 required
                 className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="email@exemple.com"
               />
             </div>
             
             <div>
               <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-1">
-                Message
+                Votre message
               </label>
               <textarea
                 id="message"
@@ -98,19 +101,31 @@ export default function ContactForm() {
                 required
                 rows="4"
                 className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="Décrivez votre question ou problème concernant votre commande, un produit..."
               />
+            </div>
+            
+            <div className="text-xs text-gray-500">
+              En soumettant ce formulaire, vous acceptez notre politique de traitement des données personnelles.
             </div>
             
             <div>
               <button
                 type="submit"
-                className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-150"
               >
-                Envoyer
+                Envoyer votre demande
               </button>
             </div>
           </form>
         )}
+        
+        <div className="mt-8 text-center text-sm text-gray-500">
+          <p>Vous pouvez aussi nous joindre par :</p>
+          <p className="font-medium mt-1">email: service-client@votreboutique.com</p>
+          <p className="font-medium">téléphone: 01 23 45 67 89</p>
+          <p className="mt-2">Horaires: Lundi-Vendredi, 9h-18h</p>
+        </div>
       </div>
     </div>
   );
