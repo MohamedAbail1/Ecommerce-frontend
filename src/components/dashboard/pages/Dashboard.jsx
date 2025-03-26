@@ -34,21 +34,35 @@ export default function Dashboard() {
         console.error("Erreur lors de la récupération des utilisateurs:", error);
       });
 
-      fetch("http://localhost:8000/api/products", {
-        method: "GET",
-        headers: {
-          "Authorization": `Bearer ${token}`,
-        },
+    // Récupérer les données des produits
+    fetch("http://localhost:8000/api/products", {
+      method: "GET",
+      headers: {
+        "Authorization": `Bearer ${token}`,
+      },
+    })
+      .then(response => response.json())
+      .then(data => {
+        setProductsCount(data.length);  // Nombre de produits récupérés
       })
-        .then(response => response.json())
-        .then(data => {
-          setProductsCount(data.length);  // Nombre de produits récupérés
-          setLoading(false);
-        })
-        .catch(error => {
-          console.error("Erreur lors de la récupération des produits:", error);
-          setLoading(false);
-        });
+      .catch(error => {
+        console.error("Erreur lors de la récupération des produits:", error);
+      });
+
+    // Récupérer les données des commandes
+    fetch("http://localhost:8000/api/admin/orders", {
+      method: "GET",
+      headers: {
+        "Authorization": `Bearer ${token}`,
+      },
+    })
+      .then(response => response.json())
+      .then(data => {
+        setOrdersCount(data.length);  // Nombre de commandes récupérées
+      })
+      .catch(error => {
+        console.error("Erreur lors de la récupération des commandes:", error);
+      });
   }, []);
 
   return (
