@@ -13,12 +13,12 @@ export default function Dashboard() {
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-
+  
     if (!token) {
       console.log("Token non trouvé");
       return;
     }
-
+  
     // Récupérer les données des utilisateurs
     fetch("http://localhost:8000/api/admin/users", {
       method: "GET",
@@ -34,7 +34,7 @@ export default function Dashboard() {
       .catch(error => {
         console.error("Erreur lors de la récupération des utilisateurs:", error);
       });
-
+  
     // Récupérer les données des produits
     fetch("http://localhost:8000/api/products", {
       method: "GET",
@@ -49,7 +49,7 @@ export default function Dashboard() {
       .catch(error => {
         console.error("Erreur lors de la récupération des produits:", error);
       });
-
+  
     // Récupérer les données des commandes
     fetch("http://localhost:8000/api/admin/orders", {
       method: "GET",
@@ -60,13 +60,23 @@ export default function Dashboard() {
       .then(response => response.json())
       .then(data => {
         setOrdersCount(data.length);
+  
         // Compter les commandes en attente
         const pendingOrders = data.filter(order => order.status === 'pending');
         setPendingOrdersCount(pendingOrders.length);
+  
+        // Calculer le revenu total à partir des commandes validées ou complétées
+        const totalRevenue = data
+            .filter(order => order.status === 'validated' || order.status === 'completed')
+            .reduce((sum, order) => sum + parseFloat(order.total_amount), 0);
+
+  
+        setRevenue(totalRevenue);
       })
       .catch(error => {
         console.error("Erreur lors de la récupération des commandes:", error);
       });
+  
   }, []);
 
   return (
