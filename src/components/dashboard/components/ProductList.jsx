@@ -61,14 +61,14 @@ export default function ProductList() {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h2 className="text-xl font-semibold">Product List</h2>
+    <div className="space-y-6 p-6 bg-gradient-to-br from-blue-50 to-purple-100 min-h-screen">
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-2xl font-bold text-gray-800">🛒 Product List</h2>
         <button
           onClick={handleAddClick}
-          className="bg-blue-600 text-white py-2 px-4 rounded-md"
+          className="bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-6 rounded-xl shadow transition duration-300"
         >
-          Add Product
+          ➕ Add Product
         </button>
       </div>
 
@@ -80,39 +80,42 @@ export default function ProductList() {
         />
       )}
 
-      <div className="bg-white p-4 rounded-lg shadow">
-        <table className="w-full text-left table-auto">
-          <thead>
+      <div className="bg-white p-6 rounded-2xl shadow-xl overflow-x-auto">
+        <table className="w-full text-sm text-left text-gray-700">
+          <thead className="text-gray-600 uppercase bg-purple-100 rounded-xl">
             <tr>
-              <th className="px-4 py-2">ID</th>
-              <th className="px-4 py-2">Name</th>
-              <th className="px-4 py-2">Price</th>
-              <th className="px-4 py-2">Stock</th>
-              <th className="px-4 py-2">Category</th>
-              <th className="px-4 py-2">Actions</th>
+              <th className="px-4 py-3">ID</th>
+              <th className="px-4 py-3">Name</th>
+              <th className="px-4 py-3">Price</th>
+              <th className="px-4 py-3">Stock</th>
+              <th className="px-4 py-3">Category</th>
+              <th className="px-4 py-3 text-center">Actions</th>
             </tr>
           </thead>
           <tbody>
-            {products.map((product) => (
-              <tr key={product.id}>
-                <td className="px-4 py-2">{product.id}</td>
-                <td className="px-4 py-2">{product.name}</td>
-                <td className="px-4 py-2">${product.price}</td>
-                <td className="px-4 py-2">${product.stock}</td>
-                <td className="px-4 py-2">{product.category_id}</td>
-                <td className="px-4 py-2">
-                  <div className="flex space-x-2">
+            {products.map((product, idx) => (
+              <tr
+                key={product.id}
+                className={`border-b ${idx % 2 === 0 ? 'bg-white' : 'bg-purple-50'} hover:bg-purple-100 transition`}
+              >
+                <td className="px-4 py-3">{product.id}</td>
+                <td className="px-4 py-3 font-medium">{product.name}</td>
+                <td className="px-4 py-3">${product.price}</td>
+                <td className="px-4 py-3">{product.stock}</td>
+                <td className="px-4 py-3">{product.category_id}</td>
+                <td className="px-4 py-3">
+                  <div className="flex justify-center space-x-2">
                     <button
                       onClick={() => handleEditClick(product)}
-                      className="px-4 py-1 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition duration-200"
+                      className="bg-green-500 hover:bg-green-600 text-white px-4 py-1 rounded-lg text-sm shadow"
                     >
-                      Edit
+                      ✏️ Edit
                     </button>
                     <button
                       onClick={() => deleteProduct(product.id)}
-                      className="px-4 py-1 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 transition duration-200"
+                      className="bg-red-500 hover:bg-red-600 text-white px-4 py-1 rounded-lg text-sm shadow"
                     >
-                      Delete
+                      🗑️ Delete
                     </button>
                   </div>
                 </td>

@@ -103,13 +103,13 @@ export default function ProductForm({ product = null, onSubmit, onClose }) {
   };
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow-md">
-      <h2 className="text-xl font-semibold mb-4">
-        {product ? "Edit Product" : "Add Product"}
+    <div className="bg-gradient-to-br from-white via-blue-50 to-white p-8 rounded-2xl shadow-xl max-w-xl mx-auto">
+      <h2 className="text-2xl font-bold text-blue-700 mb-6 text-center">
+        {product ? "✏️ Edit Product" : "➕ Add New Product"}
       </h2>
-      <form onSubmit={handleSubmit}>
-        <div className="mb-4">
-          <label htmlFor="name" className="block text-sm font-medium">
+      <form onSubmit={handleSubmit} className="space-y-5">
+        <div>
+          <label htmlFor="name" className="block text-sm font-semibold text-gray-700 mb-1">
             Product Name
           </label>
           <input
@@ -119,11 +119,11 @@ export default function ProductForm({ product = null, onSubmit, onClose }) {
             value={formData.name}
             onChange={handleChange}
             required
-            className="w-full p-2 mt-1 border rounded-md"
+            className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 outline-none"
           />
         </div>
-        <div className="mb-4">
-          <label htmlFor="description" className="block text-sm font-medium">
+        <div>
+          <label htmlFor="description" className="block text-sm font-semibold text-gray-700 mb-1">
             Description
           </label>
           <textarea
@@ -132,12 +132,12 @@ export default function ProductForm({ product = null, onSubmit, onClose }) {
             value={formData.description}
             onChange={handleChange}
             required
-            className="w-full p-2 mt-1 border rounded-md"
+            className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 outline-none"
           />
         </div>
-        <div className="mb-4">
-          <label htmlFor="price" className="block text-sm font-medium">
-            Price
+        <div>
+          <label htmlFor="price" className="block text-sm font-semibold text-gray-700 mb-1">
+            Price ($)
           </label>
           <input
             type="number"
@@ -146,11 +146,11 @@ export default function ProductForm({ product = null, onSubmit, onClose }) {
             value={formData.price}
             onChange={handleChange}
             required
-            className="w-full p-2 mt-1 border rounded-md"
+            className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 outline-none"
           />
         </div>
-        <div className="mb-4">
-          <label htmlFor="image" className="block text-sm font-medium">
+        <div>
+          <label htmlFor="image" className="block text-sm font-semibold text-gray-700 mb-1">
             Image URL
           </label>
           <input
@@ -160,11 +160,11 @@ export default function ProductForm({ product = null, onSubmit, onClose }) {
             value={formData.image}
             onChange={handleChange}
             required
-            className="w-full p-2 mt-1 border rounded-md"
+            className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 outline-none"
           />
         </div>
-        <div className="mb-4">
-          <label htmlFor="category_id" className="block text-sm font-medium">
+        <div>
+          <label htmlFor="category_id" className="block text-sm font-semibold text-gray-700 mb-1">
             Category
           </label>
           <select
@@ -173,10 +173,10 @@ export default function ProductForm({ product = null, onSubmit, onClose }) {
             value={formData.category_id}
             onChange={handleChange}
             required
-            className="w-full p-2 mt-1 border rounded-md"
+            className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 outline-none"
           >
             <option value="" disabled>
-              Select Category
+              Select a category
             </option>
             {categories.map((category) => (
               <option key={category.id} value={category.id}>
@@ -185,8 +185,8 @@ export default function ProductForm({ product = null, onSubmit, onClose }) {
             ))}
           </select>
         </div>
-        <div className="mb-4">
-          <label htmlFor="stock" className="block text-sm font-medium">
+        <div>
+          <label htmlFor="stock" className="block text-sm font-semibold text-gray-700 mb-1">
             Stock
           </label>
           <input
@@ -196,16 +196,17 @@ export default function ProductForm({ product = null, onSubmit, onClose }) {
             value={formData.stock}
             onChange={handleChange}
             required
-            className="w-full p-2 mt-1 border rounded-md"
+            className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 outline-none"
           />
         </div>
         <button
           type="submit"
-          className="w-full py-2 bg-blue-600 text-white rounded-md"
+          className="w-full py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition duration-200"
         >
-          {product ? "Update Product" : "Add Product"}
+          {product ? "✅ Update Product" : "🚀 Add Product"}
         </button>
       </form>
     </div>
   );
+  
 }
