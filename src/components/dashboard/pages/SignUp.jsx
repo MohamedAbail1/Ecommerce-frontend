@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 
+
 const SignUp = () => {
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
@@ -7,6 +8,8 @@ const SignUp = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [showPassword, setShowPassword] = useState(false); // État pour masquer/afficher le mot de passe
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false); // État pour confirmer le mot de passe
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -22,30 +25,41 @@ const SignUp = () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Accept': 'application/json',
         },
+        mode: 'cors',
         body: JSON.stringify({
           name: fullName,
           email,
           password,
+          password_confirmation: confirmPassword,
         }),
       });
 
       const data = await response.json();
+      console.log('Réponse API:', data); // Debugging
 
-      if (response.ok) {
-        setSuccess('Inscription réussie !');
-        setError('');
-        setFullName('');
-        setEmail('');
-        setPassword('');
-        setConfirmPassword('');
-      } else {
-        setError(data.message || 'Erreur lors de l’inscription.');
-        setSuccess('');
+      if (!response.ok) {
+        if (data.errors && data.errors.email) {
+          throw new Error("Cet email est déjà utilisé. Veuillez en choisir un autre.");
+        }
+
+        if (data.errors && data.errors.password) {
+          throw new Error("Le mot de passe doit contenir au moins 6 caractères.");
+        }
+
+        throw new Error(data.message || 'Erreur lors de l’inscription.');
       }
+
+      setSuccess('Inscription réussie !');
+      setError('');
+      setFullName('');
+      setEmail('');
+      setPassword('');
+      setConfirmPassword('');
     } catch (err) {
-      console.error(err);
-      setError('Erreur réseau. Veuillez réessayer plus tard.');
+      console.error('Erreur:', err);
+      setError(err.message || 'Erreur réseau. Veuillez réessayer plus tard.');
       setSuccess('');
     }
   };
@@ -75,28 +89,49 @@ const SignUp = () => {
           type="email"
           placeholder="Email"
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={(e) => {
+            setEmail(e.target.value);
+            setError(''); // Réinitialise l'erreur quand on modifie l'email
+          }}
           className="w-full p-2 border mb-4 rounded"
           required
         />
 
-        <input
-          type="password"
-          placeholder="Mot de passe"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          className="w-full p-2 border mb-4 rounded"
-          required
-        />
+        <div className="relative mb-4">
+          <input
+            type={showPassword ? 'text' : 'password'}
+            placeholder="Mot de passe"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="w-full p-2 border rounded"
+            required
+          />
+          <button
+            type="button"
+            className="absolute top-2 right-2"
+            onClick={() => setShowPassword(!showPassword)} // Toggle password visibility
+          >
+            <i className={`fas ${showPassword ? 'fa-eye-slash' : 'fa-eye'} text-gray-500`} />
+          </button>
+        </div>
 
-        <input
-          type="password"
-          placeholder="Confirmer le mot de passe"
-          value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
-          className="w-full p-2 border mb-4 rounded"
-          required
-        />
+        <div className="relative mb-4">
+          <input
+            type={showConfirmPassword ? 'text' : 'password'}
+            placeholder="Confirmer le mot de passe"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            className="w-full p-2 border rounded"
+            required
+          />
+          <button
+            type="button"
+            className="absolute top-2 right-2"
+            onClick={() => setShowConfirmPassword(!showConfirmPassword)} // Toggle confirm password visibility
+          >
+            <i className={`fas ${showConfirmPassword ? 'fa-eye-slash' : 'fa-eye'} text-gray-500`} />
+          </button>
+        </div>
 
         <button
           type="submit"
