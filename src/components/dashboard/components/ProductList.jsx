@@ -4,6 +4,7 @@ import ProductForm from './ProductForm';
 
 export default function ProductList() {
   const [products, setProducts] = useState([]);
+  const [categories, setCategories] = useState({}); // Pour stocker les noms des catégories
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [showForm, setShowForm] = useState(false);
 
@@ -11,9 +12,10 @@ export default function ProductList() {
   const token = localStorage.getItem("token");
 
   useEffect(() => {
-    // Si un token est trouvé, on peut récupérer les produits
+    // Si un token est trouvé, on peut récupérer les produits et les catégories
     if (token) {
       fetchProducts();
+      fetchCategories();
     } else {
       console.log("Token non trouvé. Vous devez vous connecter.");
     }
@@ -29,6 +31,24 @@ export default function ProductList() {
       setProducts(response.data);
     } catch (error) {
       console.error('Erreur lors de la récupération des produits', error);
+    }
+  };
+
+  const fetchCategories = async () => {
+    try {
+      const response = await axios.get('http://127.0.0.1:8000/api/categories', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      // Convertir le tableau de catégories en objet pour un accès facile par ID
+      const categoriesMap = {};
+      response.data.forEach(category => {
+        categoriesMap[category.id] = category.name;
+      });
+      setCategories(categoriesMap);
+    } catch (error) {
+      console.error('Erreur lors de la récupération des catégories', error);
     }
   };
 
@@ -139,21 +159,27 @@ export default function ProductList() {
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {product.category_id}
+                         {categories[product.category_id] || 'N/A'}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                         <div className="flex justify-end space-x-2">
                           <button
                             onClick={() => handleEditClick(product)}
-                            className="text-blue-600 hover:text-blue-900 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors"
+                            className="text-blue-600 hover:text-blue-900 p-2 rounded-lg hover:bg-blue-50 transition-colors"
+                            title="Edit"
                           >
-                            Edit
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                            </svg>
                           </button>
                           <button
                             onClick={() => deleteProduct(product.id)}
-                            className="text-red-600 hover:text-red-900 bg-red-50 hover:bg-red-100 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors"
+                            className="text-red-600 hover:text-red-900 p-2 rounded-lg hover:bg-red-50 transition-colors"
+                            title="Delete"
                           >
-                            Delete
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
                           </button>
                         </div>
                       </td>
