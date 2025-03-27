@@ -9,6 +9,8 @@ import Categories from "./components/dashboard/pages/Categories";
 import Orders from "./components/dashboard/pages/Orders";
 import Login from "./components/dashboard/pages/Login";
 import PrivateRoute from "./components/dashboard/components/PrivateRoute";
+import { ToastContainer } from "react-toastify";
+
 
 // Shop (public site)
 import Home from "./components/shop/pages/Home";
@@ -26,6 +28,11 @@ import SignUp from './components/dashboard/pages/SignUp';
 function App() {
   return (
     <Router>
+
+<>
+      <ToastContainer position="top-right" autoClose={3000} />
+      {/* Autres composants */}
+    </>
       
       <Routes>
         {/* acceuil */}

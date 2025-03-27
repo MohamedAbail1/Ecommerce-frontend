@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function ProductForm({ product = null, onSubmit, onClose }) {
   const [formData, setFormData] = useState({
@@ -10,24 +12,18 @@ export default function ProductForm({ product = null, onSubmit, onClose }) {
     category_id: "",
     stock: "",
   });
-  const [categories, setCategories] = useState([]); // Pour stocker les catégories disponibles
+  const [categories, setCategories] = useState([]);
   const token = localStorage.getItem("token");
 
-  // Initialiser le formulaire si un produit est sélectionné
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await axios.get(
-          "http://127.0.0.1:8000/api/categories",
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+        const response = await axios.get("http://127.0.0.1:8000/api/categories", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
         setCategories(response.data);
       } catch (error) {
-        console.error("Erreur lors de la récupération des catégories", error);
+        toast.error("Erreur lors de la récupération des catégories");
       }
     };
     fetchCategories();
@@ -54,7 +50,6 @@ export default function ProductForm({ product = null, onSubmit, onClose }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Submitting form:", formData);
     if (product && product.id) {
       await updateProduct(formData);
     } else {
@@ -62,43 +57,35 @@ export default function ProductForm({ product = null, onSubmit, onClose }) {
     }
   };
 
-  // Fonction pour ajouter un produit
   const addProduct = async (newProduct) => {
     try {
-      const response = await axios.post(
-        "http://127.0.0.1:8000/api/admin/products",
-        newProduct,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const response = await axios.post("http://127.0.0.1:8000/api/admin/products", newProduct, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+      toast.success("Produit ajouté avec succès !");
       onSubmit(response.data);
-      onClose(); // Fermer le formulaire après l'ajout
+      onClose();
     } catch (error) {
-      console.error("Erreur lors de l'ajout du produit", error);
+      toast.error("Erreur lors de l'ajout du produit");
     }
   };
 
-  // Fonction pour mettre à jour un produit
   const updateProduct = async (data) => {
     try {
-      const response = await axios.put(
-        `http://127.0.0.1:8000/api/admin/products/${product.id}`,
-        data,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const response = await axios.put(`http://127.0.0.1:8000/api/admin/products/${product.id}`, data, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+      toast.success("Produit mis à jour avec succès !");
       onSubmit(response.data);
-      onClose(); // Fermer le formulaire après la mise à jour
+      onClose();
     } catch (error) {
-      console.error("Erreur lors de la mise à jour du produit", error);
+      toast.error("Erreur lors de la mise à jour du produit");
     }
   };
 
@@ -208,5 +195,4 @@ export default function ProductForm({ product = null, onSubmit, onClose }) {
       </form>
     </div>
   );
-  
 }

@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import ProductForm from './ProductForm';
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function ProductList() {
   const [products, setProducts] = useState([]);
@@ -60,8 +62,10 @@ export default function ProductList() {
         },
       });
       fetchProducts();
+      toast.success('Produit supprimé avec succès !'); // Notification de succès
     } catch (error) {
       console.error('Erreur lors de la suppression du produit', error);
+      toast.error('Erreur lors de la suppression du produit'); // Notification d'erreur
     }
   };
 

@@ -20,7 +20,7 @@ export default function Categories() {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await fetch("http://127.0.0.1:8000/api/admin/categories", {
+        const response = await fetch("http://127.0.0.1:8000/api/categories", {
           method: "GET",
           headers: {
             "Authorization": `Bearer ${token}`,
