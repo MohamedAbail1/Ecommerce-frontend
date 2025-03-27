@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-
+import { LogOut, LogIn, User } from "lucide-react"; 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [user, setUser] = useState(null);
@@ -40,7 +40,7 @@ const Navbar = () => {
         <Link to="/" className="hover:text-blue-600 transition duration-200">Accueil</Link>
         <Link to="/shop/about" className="hover:text-blue-600 transition duration-200">À propos</Link>
         <Link to="/shop/Contact" className="hover:text-blue-600 transition duration-200">Contact</Link>
-        <Link to="/shop/products" className="hover:text-blue-600 transition duration-200">Produits</Link>
+        <a href="#products" className="hover:text-blue-500 transition">Produits</a>
       </div>
 
       {/* Right side */}
@@ -56,23 +56,28 @@ const Navbar = () => {
 
         {/* Utilisateur connecté */}
         {user ? (
-          <>
-            <span className="text-blue-600 font-semibold">{user.name}</span>
-            <button
-              onClick={handleLogout}
-              className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-lg text-sm font-semibold transition"
-            >
-              Logout
-            </button>
-          </>
-        ) : (
-          <Link
-            to="/login"
-            className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-1.5 rounded-md text-sm font-semibold transition"
-          >
-            Login
-          </Link>
-        )}
+  <>
+    <span className="flex items-center gap-1 text-blue-600 font-semibold">
+      <User className="w-4 h-4" />
+      {user.name}
+    </span>
+    <button
+      onClick={handleLogout}
+      className="flex items-center gap-1 bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-lg text-sm font-semibold transition"
+    >
+      <LogOut className="w-4 h-4" />
+      Logout
+    </button>
+  </>
+) : (
+  <Link
+    to="/login"
+    className="flex items-center gap-1 bg-blue-500 hover:bg-blue-600 text-white px-4 py-1.5 rounded-md text-sm font-semibold transition"
+  >
+    <LogIn className="w-4 h-4" />
+    Login
+  </Link>
+)}
 
         {/* Menu hamburger mobile */}
         <button onClick={toggleMenu} className="md:hidden text-gray-700 hover:text-blue-600 transition">
