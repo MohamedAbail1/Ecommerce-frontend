@@ -82,8 +82,8 @@ export default function AboutPage() {
                   </p>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-8">
                     {[
-                      { name: 'Hamza chagane', role: 'Fondatrice & CEO' },
-                      { name: 'Ismail Roumani', role: 'Directeur Marketing' },
+                      { name: 'Ismail Roumani', role: 'Fondatrice & CEO' },
+                      { name: 'Hamza chagane', role: 'Directeur Marketing' },
                       { name: 'Mohammed Abail', role: 'Responsable Relation Client' },
                      
                     ].map((member) => (
@@ -158,11 +158,11 @@ export default function AboutPage() {
               <p className="text-gray-600 mb-4">
                 Vous avez des questions sur notre entreprise ou nos produits ? N'hésitez pas à nous contacter.
               </p>
-              <Link to="/contact">
-  <button style={{ backgroundColor: "#27548A" }} className="w-full text-white py-2 px-4 rounded-md hover:opacity-80 transition duration-300">
-    Nous contacter
-  </button>
-</Link>
+              <Link to="/shop/contact">
+                <button style={{ backgroundColor: "#27548A" }} className="w-full text-white py-2 px-4 rounded-md hover:opacity-80 transition duration-300">
+                  Nous contacter
+                </button>
+              </Link>
             </div>
           </div>
         </div>

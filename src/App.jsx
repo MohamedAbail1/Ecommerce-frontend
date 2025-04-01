@@ -15,7 +15,7 @@ import { ToastContainer } from "react-toastify";
 // Shop (public site)
 import Home from "./components/shop/pages/Home";
 import ProductDetails from "./components/shop/pages/ProductDetails";
-import Cart from "./components/shop/pages/Cart";
+
 import Checkout from "./components/shop/pages/Checkout";
 import Aprop from './components/apropos/apropos';
 import Contacter from './components/contacterNous/contacter';
@@ -25,6 +25,13 @@ import Layout from './components/Acceuil/Layout';
 // import Fet from './components/Acceuil/Features';
 import LayoutAcceuil from './components/Acceuil/Acceuil';
 import SignUp from './components/dashboard/pages/SignUp';
+// Dans votre fichier de routes (ex: App.js ou Routes.js)
+import CartPage from "./components/shop/pages/CartPage";
+
+
+// Ajoutez cette route à votre configuration
+
+
 function App() {
   return (
     <Router>
@@ -44,17 +51,17 @@ function App() {
         <Route path="/" element= {<LayoutAcceuil><Home /></LayoutAcceuil>}/>
       {/*  */}
      
-
-
+     
+     
 
         {/* ✅ Shop public */}
         {/* <Route path="/shop" element={<Home />} /> */}
         <Route path="/shop/product/:id" element={<ProductDetails />} />
-        <Route path="/shop/cart" element={<Cart />} />
+        <Route path="/shop/cart" element={<CartPage />} />
         <Route path="/shop/checkout" element={<Checkout />} />
 
         {/* ✅ Admin dashboard */}
-        <Route path="/login" element={<Login />} />
+        {/* <Route path="/login" element={<Login />} /> */}
         <Route
           path="/*"
           element={

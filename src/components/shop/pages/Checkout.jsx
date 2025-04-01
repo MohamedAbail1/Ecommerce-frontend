@@ -1,6 +1,5 @@
-// src/components/shop/pages/Checkout.jsx
 import React, { useEffect, useState } from "react";
-import Navbar from "../components/Navbar";
+import Navbar from "../../Acceuil/NavBar";
 
 export default function Checkout() {
   const [cart, setCart] = useState([]);
@@ -12,6 +11,7 @@ export default function Checkout() {
     cvv: "",
   });
   const [isPaid, setIsPaid] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
     const storedCart = JSON.parse(localStorage.getItem("cart")) || [];
@@ -25,12 +25,54 @@ export default function Checkout() {
     setFormData({ ...formData, [name]: value });
   };
 
-  const handlePlaceOrder = (e) => {
+  const handlePlaceOrder = async (e) => {
     e.preventDefault();
-    alert("Your order has been placed!");
-    localStorage.removeItem("cart");
-    setCart([]);
-    setIsPaid(true);
+    setErrorMessage(""); // Réinitialiser les erreurs
+
+    const token = localStorage.getItem("token"); // Récupérer le token stocké
+    if (!token) {
+      setErrorMessage("Vous devez être connecté pour passer une commande.");
+      return;
+    }
+
+    const orderData = {
+      products: cart.map((item) => ({
+        id: item.id,
+        quantity: item.quantity,
+        price: item.price,
+      })),
+      total_amount: total,
+    };
+
+    try {
+      console.log("📡 Envoi de la commande:", JSON.stringify(orderData));
+
+      const response = await fetch("http://127.0.0.1:8000/api/orders", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`, // Ajout du token
+        },
+        body: JSON.stringify(orderData),
+      });
+
+      const responseData = await response.text();
+      console.log("📝 Réponse brute:", responseData);
+
+      const data = JSON.parse(responseData);
+
+      if (response.ok) {
+        
+        localStorage.removeItem("cart");
+        setCart([]);
+        setIsPaid(true);
+      } else {
+        setErrorMessage(data.error || "Une erreur est survenue.");
+      }
+    } catch (error) {
+      console.error("❌ Erreur lors de la commande:", error);
+      setErrorMessage("Erreur de connexion au serveur.");
+    }
   };
 
   return (
@@ -45,49 +87,44 @@ export default function Checkout() {
             </div>
           </div>
 
+          {errorMessage && (
+            <div className="bg-red-100 text-red-700 p-4 rounded-md mb-4">
+              {errorMessage}
+            </div>
+          )}
+
           {isPaid ? (
             <div className="text-center bg-white p-8 rounded-xl shadow-sm border border-green-100">
-              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                </svg>
-              </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">Thank you for your purchase!</h3>
-              <p className="text-gray-600 mb-6">Your order has been successfully placed.</p>
-              <button 
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                Merci pour votre achat !
+              </h3>
+              <p className="text-gray-600 mb-6">
+                Votre commande a été placée avec succès.
+              </p>
+              <button
                 onClick={() => window.location.href = "/"}
                 className="px-6 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:shadow-md transition-all"
               >
-                Continue Shopping
+                Continuer vos achats
               </button>
             </div>
           ) : (
             <div className="space-y-8">
-              {/* Order Summary */}
               <div className="bg-white p-6 rounded-xl shadow-sm">
-                <h2 className="text-xl font-semibold text-gray-800 mb-4 flex items-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                  </svg>
-                  Order Summary
+                <h2 className="text-xl font-semibold text-gray-800 mb-4">
+                  Résumé de la commande
                 </h2>
-                
                 {cart.length === 0 ? (
-                  <div className="text-center py-8">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 mx-auto text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-                    </svg>
-                    <p className="mt-4 text-gray-500">Your cart is empty</p>
-                  </div>
+                  <p className="text-center text-gray-500">
+                    Votre panier est vide
+                  </p>
                 ) : (
                   <div className="space-y-4">
                     {cart.map((item) => (
                       <div key={item.id} className="flex justify-between items-center p-3 hover:bg-gray-50 rounded-lg transition-colors">
                         <div className="flex items-center space-x-4">
-                          <div className="w-12 h-12 bg-gray-100 rounded-md flex items-center justify-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                            </svg>
+                          <div className="w-16 h-16 rounded-md overflow-hidden">
+                            <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
                           </div>
                           <div>
                             <h3 className="font-medium text-gray-800">{item.name}</h3>
@@ -97,7 +134,6 @@ export default function Checkout() {
                         <p className="font-medium text-gray-900">{item.price * item.quantity} DH</p>
                       </div>
                     ))}
-                    
                     <div className="border-t pt-4 mt-4">
                       <div className="flex justify-between text-lg font-semibold text-gray-900">
                         <span>Total</span>
@@ -107,138 +143,20 @@ export default function Checkout() {
                   </div>
                 )}
               </div>
-
-              {/* Payment Form */}
               <form onSubmit={handlePlaceOrder} className="bg-white p-6 rounded-xl shadow-sm">
-                <h2 className="text-xl font-semibold text-gray-800 mb-6 flex items-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-                  </svg>
-                  Payment Information
+                <h2 className="text-xl font-semibold text-gray-800 mb-6">
+                  Informations de paiement
                 </h2>
-                
                 <div className="space-y-5">
-                  <div>
-                    <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
-                      Full Name
-                    </label>
-                    <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                        </svg>
-                      </div>
-                      <input
-                        type="text"
-                        id="name"
-                        name="name"
-                        value={formData.name}
-                        onChange={handleChange}
-                        className="pl-10 w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                        placeholder="Your Name"
-                        required
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                      Email Address
-                    </label>
-                    <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                        </svg>
-                      </div>
-                      <input
-                        type="email"
-                        id="email"
-                        name="email"
-                        value={formData.email}
-                        onChange={handleChange}
-                        className="pl-10 w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                        placeholder="your@email.com"
-                        required
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <label htmlFor="cardNumber" className="block text-sm font-medium text-gray-700 mb-1">
-                      Card Number
-                    </label>
-                    <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-                        </svg>
-                      </div>
-                      <input
-                        type="text"
-                        id="cardNumber"
-                        name="cardNumber"
-                        value={formData.cardNumber}
-                        onChange={handleChange}
-                        className="pl-10 w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                        placeholder="4242 4242 4242 4242"
-                        required
-                      />
-                    </div>
-                  </div>
-
+                  <input type="text" name="name" value={formData.name} onChange={handleChange} placeholder="Nom complet" className="w-full p-3 border border-gray-300 rounded-lg" required />
+                  <input type="email" name="email" value={formData.email} onChange={handleChange} placeholder="Email" className="w-full p-3 border border-gray-300 rounded-lg" required />
+                  <input type="text" name="cardNumber" value={formData.cardNumber} onChange={handleChange} placeholder="Numéro de carte" className="w-full p-3 border border-gray-300 rounded-lg" required />
                   <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label htmlFor="expiryDate" className="block text-sm font-medium text-gray-700 mb-1">
-                        Expiry Date
-                      </label>
-                      <input
-                        type="text"
-                        id="expiryDate"
-                        name="expiryDate"
-                        value={formData.expiryDate}
-                        onChange={handleChange}
-                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                        placeholder="MM/YY"
-                        required
-                      />
-                    </div>
-
-                    <div>
-                      <label htmlFor="cvv" className="block text-sm font-medium text-gray-700 mb-1">
-                        CVV
-                      </label>
-                      <div className="relative">
-                        <input
-                          type="text"
-                          id="cvv"
-                          name="cvv"
-                          value={formData.cvv}
-                          onChange={handleChange}
-                          className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                          placeholder="123"
-                          required
-                        />
-                        <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                          </svg>
-                        </div>
-                      </div>
-                    </div>
+                    <input type="text" name="expiryDate" value={formData.expiryDate} onChange={handleChange} placeholder="MM/AA" className="w-full p-3 border border-gray-300 rounded-lg" required />
+                    <input type="text" name="cvv" value={formData.cvv} onChange={handleChange} placeholder="CVV" className="w-full p-3 border border-gray-300 rounded-lg" required />
                   </div>
-
-                  <button
-                    type="submit"
-                    disabled={cart.length === 0}
-                    className={`w-full py-3 px-4 rounded-lg font-medium text-white shadow-md transition-all ${cart.length === 0 ? 'bg-gray-400 cursor-not-allowed' : 'bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 hover:shadow-lg'}`}
-                  >
-                    <div className="flex items-center justify-center">
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                      </svg>
-                      Confirm Payment
-                    </div>
+                  <button type="submit" disabled={cart.length === 0} className={`w-full py-3 px-4 rounded-lg font-medium text-white shadow-md transition-all ${cart.length === 0 ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'}`}>
+                    Confirmer le paiement
                   </button>
                 </div>
               </form>
