@@ -8,6 +8,7 @@ import Products from "./components/dashboard/pages/Products";
 import Categories from "./components/dashboard/pages/Categories";
 import Orders from "./components/dashboard/pages/Orders";
 import Login from "./components/dashboard/pages/Login";
+import Messages from "./components/dashboard/pages/Messages"; // Importez la page Messages
 import PrivateRoute from "./components/dashboard/components/PrivateRoute";
 import { ToastContainer } from "react-toastify";
 
@@ -75,6 +76,7 @@ function App() {
                     <Route path="/products" element={<Products />} />
                     <Route path="/categories" element={<Categories />} />
                     <Route path="/orders" element={<Orders />} />
+                    <Route path="/messages" element={<Messages />} /> {/* Route pour les messages */}
                   </Routes>
                 </div>
               </div>
