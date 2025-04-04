@@ -15,13 +15,14 @@ import { ToastContainer } from "react-toastify";
 // Shop (public site)
 import Home from "./components/shop/pages/Home";
 import ProductDetails from "./components/shop/pages/ProductDetails";
-
+import Catalog from "./components/shop/pages/Catalog"
 import Checkout from "./components/shop/pages/Checkout";
 import Aprop from './components/apropos/apropos';
 import Contacter from './components/contacterNous/contacter';
 import Navbar from './components/Acceuil/NavBar';
 import Footer  from './components/Acceuil/Footer'
 import Layout from './components/Acceuil/Layout';
+
 // import Fet from './components/Acceuil/Features';
 import LayoutAcceuil from './components/Acceuil/Acceuil';
 import SignUp from './components/dashboard/pages/SignUp';
@@ -59,9 +60,9 @@ function App() {
         <Route path="/shop/product/:id" element={<ProductDetails />} />
         <Route path="/shop/cart" element={<CartPage />} />
         <Route path="/shop/checkout" element={<Checkout />} />
-
+        <Route path="/catalog" element={<Catalog />} />
         {/* ✅ Admin dashboard */}
-        {/* <Route path="/login" element={<Login />} /> */}
+        
         <Route
           path="/*"
           element={

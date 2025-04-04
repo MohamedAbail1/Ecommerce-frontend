@@ -1,10 +1,9 @@
-// src/components/shop/components/ProfessionalProductCard.jsx
 import React from "react";
 import { Link } from "react-router-dom";
 
 export default function ProfessionalProductCard({ product }) {
   return (
-    <div className="bg-white border border-gray-300 rounded-lg shadow-sm overflow-hidden transition-all duration-300 hover:shadow-lg group hover:border-blue-500">
+    <div className="bg-white border border-gray-300 rounded-lg shadow-sm overflow-hidden transition-all duration-300 hover:shadow-lg group hover:border-blue-500 h-full flex flex-col">
       {/* Image Section */}
       <div className="relative w-full h-56 overflow-hidden">
         <img
@@ -20,16 +19,17 @@ export default function ProfessionalProductCard({ product }) {
       </div>
 
       {/* Product Details */}
-      <div className="p-5">
+      <div className="p-5 flex-1 flex flex-col">
         {/* Product Header */}
         <div className="flex justify-between items-start mb-3">
           <div className="flex-grow pr-4">
             <h3 className="text-lg font-semibold text-gray-800 truncate mb-1">
               {product.name}
             </h3>
-            <p className="text-gray-500 text-sm truncate">
-              {product.category || 'Product Category'}
-            </p>
+            {/* Description complète avec défilement si nécessaire */}
+            <div className="text-gray-500 text-sm max-h-20 overflow-y-auto">
+              <p>{product.description || 'Product Category'}</p>
+            </div>
           </div>
 
           {/* Price */}
@@ -75,8 +75,8 @@ export default function ProfessionalProductCard({ product }) {
           </div>
         )}
 
-        {/* Action Buttons */}
-        <div className="flex space-x-3">
+        {/* Action Buttons - Placé en bas avec mt-auto */}
+        <div className="flex space-x-3 mt-auto">
           <Link
             to={`/shop/product/${product.id}`}
             className="flex-grow text-center bg-blue-600 text-white py-2 rounded-md 
@@ -84,7 +84,7 @@ export default function ProfessionalProductCard({ product }) {
               hover:bg-blue-700 
               focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
           >
-            View Details
+            Voir plus
           </Link>
           <Link to="/shop/cart"> 
           <button
