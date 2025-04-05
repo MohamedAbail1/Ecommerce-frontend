@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
-import { FaEye, FaSearch, FaTimes, FaReply, FaEnvelope, FaSpinner } from "react-icons/fa";
+import { FaEye, FaSearch, FaTimes, FaReply, FaEnvelope, FaSpinner, FaTrash } from "react-icons/fa";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -39,7 +39,6 @@ export default function Messages() {
       if (!response.ok) throw new Error("Failed to fetch messages");
       
       const data = await response.json();
-      // Trier les messages pour mettre "unread" en premier
       const sortedMessages = [...data].sort((a, b) => {
         if (a.status === 'unread' && b.status !== 'unread') return -1;
         if (a.status !== 'unread' && b.status === 'unread') return 1;
@@ -68,7 +67,6 @@ export default function Messages() {
       );
     });
   
-    // Trier les résultats filtrés pour mettre "unread" en premier
     const sortedFiltered = [...filtered].sort((a, b) => {
       if (a.status === 'unread' && b.status !== 'unread') return -1;
       if (a.status !== 'unread' && b.status === 'unread') return 1;
@@ -81,7 +79,6 @@ export default function Messages() {
   const handleView = (message) => {
     setSelectedMessage(message);
     setShowModal(true);
-    // Mark as read when viewing
     if (message.status === 'unread') {
       updateMessageStatus(message.id, 'read');
     }
@@ -155,6 +152,57 @@ export default function Messages() {
     }
   };
 
+  const deleteMessage = async (id) => {
+    toast.info(
+      <div className="p-3">
+        <p className="text-gray-700 mb-3">Voulez-vous vraiment supprimer ce message ?</p>
+        <div className="flex gap-3 justify-center">
+          <button 
+            onClick={async () => {
+              setIsUpdating(true);
+              try {
+                const response = await fetch(`http://localhost:8000/api/admin/contact/${id}`, {
+                  method: "DELETE",
+                  headers: {
+                    "Authorization": `Bearer ${token}`,
+                  },
+                });
+  
+                if (!response.ok) throw new Error("Échec de la suppression du message");
+  
+                toast.success("Message supprimé avec succès !", {
+                  className: "bg-green-50 text-green-800 border-l-4 border-green-500",
+                });
+  
+                fetchMessages();
+                if (selectedMessage?.id === id) {
+                  closeModal();
+                }
+              } catch (error) {
+                toast.error(error.message, {
+                  className: "bg-red-50 text-red-800 border-l-4 border-red-500",
+                });
+              } finally {
+                setIsUpdating(false);
+                toast.dismiss();
+              }
+            }} 
+            className="px-4 py-2 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-lg hover:from-red-600 hover:to-red-700 transition-all shadow-md"
+          >
+            Oui, supprimer
+          </button>
+          <button 
+            onClick={() => toast.dismiss()} 
+            className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-all"
+          >
+            Annuler
+          </button>
+        </div>
+      </div>,
+      { autoClose: false, closeOnClick: false, className: "bg-white" }
+    );
+  };
+  
   if (loading) return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 flex items-center justify-center">
       <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-600"></div>
@@ -175,7 +223,6 @@ export default function Messages() {
       <div className="max-w-7xl mx-auto space-y-6">
         <ToastContainer position="top-right" autoClose={5000} />
         
-        {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
             <h1 className="text-2xl md:text-3xl font-bold text-gray-800 flex items-center gap-2">
@@ -185,7 +232,6 @@ export default function Messages() {
             <p className="text-sm text-gray-500 mt-1">View and manage customer messages</p>
           </div>
           
-          {/* Search Bar */}
           <div className="relative w-full sm:w-64">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <FaSearch className="text-gray-400" />
@@ -200,7 +246,6 @@ export default function Messages() {
           </div>
         </div>
 
-        {/* Messages Table */}
         <div className="bg-white rounded-2xl shadow-md overflow-hidden">
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
@@ -264,6 +309,15 @@ export default function Messages() {
                               <FaReply className="h-5 w-5" />
                             </button>
                           )}
+                          <button
+                            onClick={() => deleteMessage(message.id)}
+                            className="text-red-600 hover:text-red-900 p-2 rounded-lg hover:bg-red-50 transition-colors"
+                            title="Supprimer"
+                          >
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                          </button>
                         </div>
                       </td>
                     </tr>
@@ -296,7 +350,6 @@ export default function Messages() {
         </div>
       </div>
 
-      {/* Message Details Modal */}
       {showModal && selectedMessage && (
         <div className="fixed inset-0 bg-gray-100/90 backdrop-blur-sm flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-2xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto relative border border-gray-200">
@@ -373,16 +426,26 @@ export default function Messages() {
               )}
             </div>
             <div className="border-t p-4 flex justify-between sticky bottom-0 bg-white">
-              {selectedMessage.status !== 'replied' && (
+              <div className="flex space-x-2">
+                {selectedMessage.status !== 'replied' && (
+                  <button
+                    onClick={sendReply}
+                    className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-lg hover:from-purple-600 hover:to-purple-700 transition-all shadow-md"
+                    disabled={isUpdating || !replyContent.trim()}
+                  >
+                    {isUpdating ? <FaSpinner className="animate-spin" /> : <FaReply />}
+                    <span>Send Reply</span>
+                  </button>
+                )}
                 <button
-                  onClick={sendReply}
-                  className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-lg hover:from-purple-600 hover:to-purple-700 transition-all shadow-md"
-                  disabled={isUpdating || !replyContent.trim()}
+                  onClick={() => deleteMessage(selectedMessage.id)}
+                  className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-lg hover:from-red-600 hover:to-red-700 transition-all shadow-md"
+                  disabled={isUpdating}
                 >
-                  {isUpdating ? <FaSpinner className="animate-spin" /> : <FaReply />}
-                  <span>Send Reply</span>
+                  {isUpdating ? <FaSpinner className="animate-spin" /> : <FaTrash />}
+                  <span>Delete Message</span>
                 </button>
-              )}
+              </div>
               <button
                 onClick={closeModal}
                 className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-all"
