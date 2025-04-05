@@ -54,7 +54,6 @@ export default function Sidebar() {
             className="h-5 w-5 mr-3 text-gray-400 group-hover:text-blue-300" 
           />
           <span className="group-hover:text-white">Products</span>
-          <span className="ml-auto bg-blue-500 text-xs px-2 py-1 rounded-full">New</span>
         </Link>
         
         <Link 
@@ -77,7 +76,6 @@ export default function Sidebar() {
             className="h-5 w-5 mr-3 text-gray-400 group-hover:text-blue-300" 
           />
           <span className="group-hover:text-white">Orders</span>
-          <span className="ml-auto bg-red-500 text-xs px-2 py-1 rounded-full">3</span>
         </Link>
 
         {/* New Message Link */}
@@ -90,7 +88,6 @@ export default function Sidebar() {
             className="h-5 w-5 mr-3 text-gray-400 group-hover:text-blue-300" 
           />
           <span className="group-hover:text-white">Messages</span>
-          <span className="ml-auto bg-green-500 text-xs px-2 py-1 rounded-full">5</span> {/* Afficher le nombre de messages non lus */}
         </Link>
 
         {/* Account Section */}
