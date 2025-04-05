@@ -23,7 +23,7 @@ import Contacter from './components/contacterNous/contacter';
 import Navbar from './components/Acceuil/NavBar';
 import Footer  from './components/Acceuil/Footer'
 import Layout from './components/Acceuil/Layout';
-
+import Profile from './components/Acceuil/ProfilePage';
 // import Fet from './components/Acceuil/Features';
 import LayoutAcceuil from './components/Acceuil/Acceuil';
 import SignUp from './components/dashboard/pages/SignUp';
@@ -53,7 +53,7 @@ function App() {
         <Route path="/" element= {<LayoutAcceuil><Home /></LayoutAcceuil>}/>
       {/*  */}
      
-     
+      <Route path="/profile" element={<Profile />} />
      
 
         {/* ✅ Shop public */}
