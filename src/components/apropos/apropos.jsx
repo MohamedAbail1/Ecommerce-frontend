@@ -93,7 +93,7 @@ export default function AboutPage() {
                    { 
                      name: 'Hamza Chagane', 
                      role: 'Directeur Marketing',
-                     image: hamzaImage
+                     image:hamzaImage
                    },
                    { 
                      name: 'Mohammed Abail', 
