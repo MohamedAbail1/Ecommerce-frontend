@@ -7,14 +7,14 @@ import "react-toastify/dist/ReactToastify.css";
 
 export default function Messages() {
   const [messages, setMessages] = useState([]);
-  const [messagesFiltres, setMessagesFiltres] = useState([]);
-  const [termeRecherche, setTermeRecherche] = useState("");
-  const [chargement, setChargement] = useState(true);
-  const [erreur, setErreur] = useState(null);
-  const [messageSelectionne, setMessageSelectionne] = useState(null);
-  const [afficherModal, setAfficherModal] = useState(false);
-  const [enMiseAJour, setEnMiseAJour] = useState(false);
-  const [contenuReponse, setContenuReponse] = useState("");
+  const [filteredMessages, setFilteredMessages] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [selectedMessage, setSelectedMessage] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [replyContent, setReplyContent] = useState("");
   const navigate = useNavigate();
 
   const token = localStorage.getItem("token");
@@ -28,7 +28,6 @@ export default function Messages() {
     fetchMessages();
   }, [token, navigate]);
 
-  // Fonction gardée en anglais pour l'API
   const fetchMessages = async () => {
     try {
       const response = await fetch("http://localhost:8000/api/admin/contact", {
@@ -37,63 +36,62 @@ export default function Messages() {
         },
       });
 
-      if (!response.ok) throw new Error("Échec de la récupération des messages");
+      if (!response.ok) throw new Error("Failed to fetch messages");
       
       const data = await response.json();
-      const messagesTries = [...data].sort((a, b) => {
+      const sortedMessages = [...data].sort((a, b) => {
         if (a.status === 'unread' && b.status !== 'unread') return -1;
         if (a.status !== 'unread' && b.status === 'unread') return 1;
         return new Date(b.created_at) - new Date(a.created_at);
       });
       
-      setMessages(messagesTries);
-      setMessagesFiltres(messagesTries);
-      setChargement(false);
+      setMessages(sortedMessages);
+      setFilteredMessages(sortedMessages);
+      setLoading(false);
     } catch (error) {
-      setErreur(error.message);
-      setChargement(false);
+      setError(error.message);
+      setLoading(false);
     }
   };
 
-  const gererRecherche = (e) => {
-    const valeur = e.target.value.toLowerCase();
-    setTermeRecherche(valeur);
+  const handleSearch = (e) => {
+    const value = e.target.value.toLowerCase();
+    setSearchTerm(value);
   
-    const filtres = messages.filter((message) => {
+    const filtered = messages.filter((message) => {
       return (
-        message.id.toString().includes(valeur) ||
-        message.name.toLowerCase().includes(valeur) || // Gardé en anglais
-        message.email.toLowerCase().includes(valeur) || // Gardé en anglais
-        message.subject.toLowerCase().includes(valeur) // Gardé en anglais
+        message.id.toString().includes(value) ||
+        message.name.toLowerCase().includes(value) ||
+        message.email.toLowerCase().includes(value) ||
+        message.subject.toLowerCase().includes(value)
       );
     });
   
-    const filtresTries = [...filtres].sort((a, b) => {
+    const sortedFiltered = [...filtered].sort((a, b) => {
       if (a.status === 'unread' && b.status !== 'unread') return -1;
       if (a.status !== 'unread' && b.status === 'unread') return 1;
       return new Date(b.created_at) - new Date(a.created_at);
     });
   
-    setMessagesFiltres(filtresTries);
+    setFilteredMessages(sortedFiltered);
   };
 
-  const afficherDetails = (message) => {
-    setMessageSelectionne(message);
-    setAfficherModal(true);
+  const handleView = (message) => {
+    setSelectedMessage(message);
+    setShowModal(true);
     if (message.status === 'unread') {
       updateMessageStatus(message.id, 'read');
     }
   };
 
-  const fermerModal = () => {
-    setAfficherModal(false);
-    setMessageSelectionne(null);
-    setContenuReponse("");
+  const closeModal = () => {
+    setShowModal(false);
+    setSelectedMessage(null);
+    setReplyContent("");
   };
 
-  // Fonction gardée en anglais pour l'API
   const updateMessageStatus = async (id, newStatus) => {
-    setEnMiseAJour(true);
+    setIsUpdating(true);
     try {
       const response = await fetch(`http://localhost:8000/api/admin/contact/${id}/status`, {
         method: "PUT",
@@ -101,67 +99,67 @@ export default function Messages() {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ status: newStatus }), // Gardé en anglais
+        body: JSON.stringify({ status: newStatus }),
       });
 
-      if (!response.ok) throw new Error("Échec de la mise à jour du statut du message");
+      if (!response.ok) throw new Error("Failed to update message status");
       
       fetchMessages();
-      if (messageSelectionne?.id === id) {
-        setMessageSelectionne({...messageSelectionne, status: newStatus});
+      if (selectedMessage?.id === id) {
+        setSelectedMessage({...selectedMessage, status: newStatus});
       }
     } catch (error) {
       toast.error(error.message, {
         className: "bg-red-50 text-red-800 border-l-4 border-red-500",
       });
     } finally {
-      setEnMiseAJour(false);
+      setIsUpdating(false);
     }
   };
 
-  const envoyerReponse = async () => {
-    if (!contenuReponse.trim()) {
-      toast.error("Le contenu de la réponse ne peut pas être vide", {
+  const sendReply = async () => {
+    if (!replyContent.trim()) {
+      toast.error("Reply content cannot be empty", {
         className: "bg-red-50 text-red-800 border-l-4 border-red-500",
       });
       return;
     }
 
-    setEnMiseAJour(true);
+    setIsUpdating(true);
     try {
-      const response = await fetch(`http://localhost:8000/api/admin/contact/${messageSelectionne.id}/reply`, {
+      const response = await fetch(`http://localhost:8000/api/admin/contact/${selectedMessage.id}/reply`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ reply: contenuReponse }), // Gardé en anglais
+        body: JSON.stringify({ reply: replyContent }),
       });
 
-      if (!response.ok) throw new Error("Échec de l'envoi de la réponse");
+      if (!response.ok) throw new Error("Failed to send reply");
       
-      toast.success("Réponse envoyée avec succès !", {
+      toast.success("Reply sent successfully!", {
         className: "bg-green-50 text-green-800 border-l-4 border-green-500",
       });
-      setContenuReponse("");
+      setReplyContent("");
       fetchMessages();
     } catch (error) {
       toast.error(error.message, {
         className: "bg-red-50 text-red-800 border-l-4 border-red-500",
       });
     } finally {
-      setEnMiseAJour(false);
+      setIsUpdating(false);
     }
   };
 
-  const supprimerMessage = async (id) => {
+  const deleteMessage = async (id) => {
     toast.info(
       <div className="p-3">
         <p className="text-gray-700 mb-3">Voulez-vous vraiment supprimer ce message ?</p>
         <div className="flex gap-3 justify-center">
           <button 
             onClick={async () => {
-              setEnMiseAJour(true);
+              setIsUpdating(true);
               try {
                 const response = await fetch(`http://localhost:8000/api/admin/contact/${id}`, {
                   method: "DELETE",
@@ -177,15 +175,15 @@ export default function Messages() {
                 });
   
                 fetchMessages();
-                if (messageSelectionne?.id === id) {
-                  fermerModal();
+                if (selectedMessage?.id === id) {
+                  closeModal();
                 }
               } catch (error) {
                 toast.error(error.message, {
                   className: "bg-red-50 text-red-800 border-l-4 border-red-500",
                 });
               } finally {
-                setEnMiseAJour(false);
+                setIsUpdating(false);
                 toast.dismiss();
               }
             }} 
@@ -205,17 +203,17 @@ export default function Messages() {
     );
   };
   
-  if (chargement) return (
+  if (loading) return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 flex items-center justify-center">
       <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-600"></div>
     </div>
   );
   
-  if (erreur) return (
+  if (error) return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 flex items-center justify-center">
       <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-6 rounded-lg max-w-md">
-        <h3 className="font-bold text-lg mb-2">Erreur de chargement</h3>
-        <p>{erreur}</p>
+        <h3 className="font-bold text-lg mb-2">Loading Error</h3>
+        <p>{error}</p>
       </div>
     </div>
   );
@@ -229,9 +227,9 @@ export default function Messages() {
           <div>
             <h1 className="text-2xl md:text-3xl font-bold text-gray-800 flex items-center gap-2">
               <FaEnvelope className="text-purple-600 text-2xl" />
-              Gestion des messages
+              Messages Management
             </h1>
-            <p className="text-sm text-gray-500 mt-1">Visualisez et gérez les messages des clients</p>
+            <p className="text-sm text-gray-500 mt-1">View and manage customer messages</p>
           </div>
           
           <div className="relative w-full sm:w-64">
@@ -240,9 +238,9 @@ export default function Messages() {
             </div>
             <input
               type="text"
-              placeholder="Rechercher des messages..."
-              value={termeRecherche}
-              onChange={gererRecherche}
+              placeholder="Search messages..."
+              value={searchTerm}
+              onChange={handleSearch}
               className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all"
             />
           </div>
@@ -257,10 +255,10 @@ export default function Messages() {
                     ID
                   </th>
                   <th scope="col" className="px-6 py-4 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
-                    Expéditeur
+                    From
                   </th>
                   <th scope="col" className="px-6 py-4 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
-                    Sujet
+                    Subject
                   </th>
                   <th scope="col" className="px-6 py-4 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
                     Date
@@ -271,8 +269,8 @@ export default function Messages() {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {messagesFiltres.length > 0 ? (
-                  messagesFiltres.map((message) => (
+                {filteredMessages.length > 0 ? (
+                  filteredMessages.map((message) => (
                     <tr 
                       key={message.id} 
                       className={`hover:bg-gray-50 transition-colors ${message.status === 'unread' ? 'bg-blue-50' : ''}`}
@@ -281,38 +279,38 @@ export default function Messages() {
                         #{message.id}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900 font-medium">{message.name}</div> {/* Gardé en anglais */}
-                        <div className="text-sm text-gray-500">{message.email}</div> {/* Gardé en anglais */}
+                        <div className="text-sm text-gray-900 font-medium">{message.name}</div>
+                        <div className="text-sm text-gray-500">{message.email}</div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 max-w-xs truncate">
-                        {message.subject} {/* Gardé en anglais */}
+                        {message.subject}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {new Date(message.created_at).toLocaleDateString()} {/* Gardé en anglais */}
+                        {new Date(message.created_at).toLocaleDateString()}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                         <div className="flex justify-end space-x-2">
                           <button
-                            onClick={() => afficherDetails(message)}
+                            onClick={() => handleView(message)}
                             className="text-blue-600 hover:text-blue-900 p-2 rounded-lg hover:bg-blue-50 transition-colors"
-                            title="Voir le message"
+                            title="View message"
                           >
                             <FaEye className="h-5 w-5" />
                           </button>
-                          {message.status !== 'replied' && ( /* Gardé en anglais */
+                          {message.status !== 'replied' && (
                             <button
                               onClick={() => {
-                                afficherDetails(message);
+                                handleView(message);
                                 document.getElementById('reply-textarea')?.focus();
                               }}
                               className="text-purple-600 hover:text-purple-900 p-2 rounded-lg hover:bg-purple-50 transition-colors"
-                              title="Répondre au message"
+                              title="Reply to message"
                             >
                               <FaReply className="h-5 w-5" />
                             </button>
                           )}
                           <button
-                            onClick={() => supprimerMessage(message.id)}
+                            onClick={() => deleteMessage(message.id)}
                             className="text-red-600 hover:text-red-900 p-2 rounded-lg hover:bg-red-50 transition-colors"
                             title="Supprimer"
                           >
@@ -330,17 +328,17 @@ export default function Messages() {
                       <div className="flex flex-col items-center justify-center text-gray-400">
                         <FaEnvelope className="h-12 w-12" />
                         <p className="mt-2 text-sm font-medium text-gray-500">
-                          {termeRecherche ? "Aucun message trouvé" : "Aucun message existant"}
+                          {searchTerm ? "No messages found" : "No messages exist"}
                         </p>
-                        {termeRecherche ? (
+                        {searchTerm ? (
                           <button
-                            onClick={() => setTermeRecherche("")}
+                            onClick={() => setSearchTerm("")}
                             className="mt-4 text-purple-600 hover:text-purple-800 text-sm font-medium"
                           >
-                            Réinitialiser la recherche
+                            Reset search
                           </button>
                         ) : (
-                          <p className="mt-1 text-sm text-gray-500">Lorsque des messages seront reçus, ils apparaîtront ici</p>
+                          <p className="mt-1 text-sm text-gray-500">When messages are received, they will appear here</p>
                         )}
                       </div>
                     </td>
@@ -352,13 +350,13 @@ export default function Messages() {
         </div>
       </div>
 
-      {afficherModal && messageSelectionne && (
+      {showModal && selectedMessage && (
         <div className="fixed inset-0 bg-gray-100/90 backdrop-blur-sm flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-2xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto relative border border-gray-200">
             <div className="flex justify-between items-center border-b p-4 sticky top-0 bg-white z-10">
-              <h3 className="font-semibold text-xl text-gray-800">Détails du message</h3>
+              <h3 className="font-semibold text-xl text-gray-800">Message Details</h3>
               <button
-                onClick={fermerModal}
+                onClick={closeModal}
                 className="text-gray-500 hover:text-gray-700 transition p-2 rounded-full hover:bg-gray-100"
               >
                 <FaTimes className="w-5 h-5" />
@@ -367,95 +365,92 @@ export default function Messages() {
             <div className="p-6 space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <p className="text-sm text-gray-500 mb-1">ID du message</p>
-                  <p className="font-medium">#{messageSelectionne.id}</p>
+                  <p className="text-sm text-gray-500 mb-1">Message ID</p>
+                  <p className="font-medium">#{selectedMessage.id}</p>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-500 mb-1">Statut</p>
+                  <p className="text-sm text-gray-500 mb-1">Status</p>
                   <p className={`font-medium capitalize ${
-                    messageSelectionne.status === 'read' ? 'text-green-600' : /* Gardé en anglais */
-                    messageSelectionne.status === 'unread' ? 'text-blue-600' : /* Gardé en anglais */
-                    messageSelectionne.status === 'replied' ? 'text-purple-600' : /* Gardé en anglais */
+                    selectedMessage.status === 'read' ? 'text-green-600' :
+                    selectedMessage.status === 'unread' ? 'text-blue-600' :
+                    selectedMessage.status === 'replied' ? 'text-purple-600' :
                     'text-gray-600'
                   }`}>
-                    {messageSelectionne.status === 'read' ? 'lu' : /* Traduction affichée */
-                     messageSelectionne.status === 'unread' ? 'non lu' :
-                     messageSelectionne.status === 'replied' ? 'répondu' :
-                     messageSelectionne.status}
+                    {selectedMessage.status}
                   </p>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-500 mb-1">Expéditeur</p>
-                  <p className="font-medium">{messageSelectionne.name}</p> {/* Gardé en anglais */}
-                  <p className="text-sm text-gray-600">{messageSelectionne.email}</p> {/* Gardé en anglais */}
+                  <p className="text-sm text-gray-500 mb-1">From</p>
+                  <p className="font-medium">{selectedMessage.name}</p>
+                  <p className="text-sm text-gray-600">{selectedMessage.email}</p>
                 </div>
                 <div>
                   <p className="text-sm text-gray-500 mb-1">Date</p>
-                  <p className="font-medium">{new Date(messageSelectionne.created_at).toLocaleString()}</p> {/* Gardé en anglais */}
+                  <p className="font-medium">{new Date(selectedMessage.created_at).toLocaleString()}</p>
                 </div>
               </div>
 
               <div>
-                <p className="text-sm text-gray-500 mb-1">Sujet</p>
-                <p className="font-medium text-lg mb-4">{messageSelectionne.subject}</p> {/* Gardé en anglais */}
+                <p className="text-sm text-gray-500 mb-1">Subject</p>
+                <p className="font-medium text-lg mb-4">{selectedMessage.subject}</p>
                 
                 <p className="text-sm text-gray-500 mb-1">Message</p>
                 <div className="bg-gray-50 p-4 rounded-lg whitespace-pre-line">
-                  {messageSelectionne.message} {/* Gardé en anglais */}
+                  {selectedMessage.message}
                 </div>
               </div>
 
-              {messageSelectionne.status === 'replied' && messageSelectionne.reply && ( /* Gardé en anglais */
+              {selectedMessage.status === 'replied' && selectedMessage.reply && (
                 <div>
-                  <p className="text-sm text-gray-500 mb-1">Votre réponse</p>
+                  <p className="text-sm text-gray-500 mb-1">Your Reply</p>
                   <div className="bg-purple-50 p-4 rounded-lg whitespace-pre-line">
-                    {messageSelectionne.reply} /* Gardé en anglais */
+                    {selectedMessage.reply}
                   </div>
                 </div>
               )}
 
-              {messageSelectionne.status !== 'replied' && ( /* Gardé en anglais */
+              {selectedMessage.status !== 'replied' && (
                 <div>
                   <label htmlFor="reply-textarea" className="block text-sm font-medium text-gray-700 mb-2">
-                    Répondre à ce message
+                    Reply to this message
                   </label>
                   <textarea
                     id="reply-textarea"
                     rows={4}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
-                    placeholder="Tapez votre réponse ici..."
-                    value={contenuReponse}
-                    onChange={(e) => setContenuReponse(e.target.value)}
+                    placeholder="Type your reply here..."
+                    value={replyContent}
+                    onChange={(e) => setReplyContent(e.target.value)}
                   />
                 </div>
               )}
             </div>
             <div className="border-t p-4 flex justify-between sticky bottom-0 bg-white">
               <div className="flex space-x-2">
-                {messageSelectionne.status !== 'replied' && ( /* Gardé en anglais */
+                {selectedMessage.status !== 'replied' && (
                   <button
-                    onClick={envoyerReponse}
+                    onClick={sendReply}
                     className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-lg hover:from-purple-600 hover:to-purple-700 transition-all shadow-md"
-                    disabled={enMiseAJour || !contenuReponse.trim()}
+                    disabled={isUpdating || !replyContent.trim()}
                   >
-                    {enMiseAJour ? <FaSpinner className="animate-spin" /> : <FaReply />}
-                    <span>Envoyer la réponse</span>
+                    {isUpdating ? <FaSpinner className="animate-spin" /> : <FaReply />}
+                    <span>Send Reply</span>
                   </button>
                 )}
                 <button
-                  onClick={() => supprimerMessage(messageSelectionne.id)}
+                  onClick={() => deleteMessage(selectedMessage.id)}
                   className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-lg hover:from-red-600 hover:to-red-700 transition-all shadow-md"
-                  disabled={enMiseAJour}
+                  disabled={isUpdating}
                 >
-                  {enMiseAJour ? <FaSpinner className="animate-spin" /> : <FaTrash />}
-                  <span>Supprimer le message</span>
+                  {isUpdating ? <FaSpinner className="animate-spin" /> : <FaTrash />}
+                  <span>Delete Message</span>
                 </button>
               </div>
               <button
-                onClick={fermerModal}
+                onClick={closeModal}
                 className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-all"
               >
-                Fermer
+                Close
               </button>
             </div>
           </div>
