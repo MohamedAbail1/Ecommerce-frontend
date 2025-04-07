@@ -132,7 +132,7 @@ export default function CartPage() {
               </svg>
               <p className="text-xl text-gray-600 mb-4">Votre panier est vide</p>
               <Link
-                to="/"
+                to="/catalog"
                 className="inline-block bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white py-2 px-6 rounded-lg shadow-md hover:shadow-lg transition-all duration-300"
               >
                 Continuer vos achats

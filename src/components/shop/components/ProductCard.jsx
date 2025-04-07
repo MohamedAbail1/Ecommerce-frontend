@@ -1,4 +1,3 @@
-// src/components/shop/components/ProfessionalProductCard.jsx
 import React from "react";
 import { Link } from "react-router-dom";
 
@@ -6,6 +5,7 @@ export default function ProfessionalProductCard({ product }) {
   return (
     <div className="bg-white rounded-2xl shadow-md border border-gray-200 overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1 group">
       
+    <div className="bg-white border border-gray-300 rounded-lg shadow-sm overflow-hidden transition-all duration-300 hover:shadow-lg group hover:border-blue-500 h-full flex flex-col">
       {/* Image Section */}
       <div className="relative w-full h-60 overflow-hidden">
         <img
@@ -27,6 +27,31 @@ export default function ProfessionalProductCard({ product }) {
         <div>
           <h3 className="text-lg font-semibold text-gray-800 truncate">{product.name}</h3>
           <p className="text-sm text-gray-500 truncate">{product.category || "Product Category"}</p>
+      {/* Product Details */}
+      <div className="p-5 flex-1 flex flex-col">
+        {/* Product Header */}
+        <div className="flex justify-between items-start mb-3">
+          <div className="flex-grow pr-4">
+            <h3 className="text-lg font-semibold text-gray-800 truncate mb-1">
+              {product.name}
+            </h3>
+            {/* Description complète avec défilement si nécessaire */}
+            <div className="text-gray-500 text-sm max-h-20 overflow-y-auto">
+              <p>{product.description || 'Product Category'}</p>
+            </div>
+          </div>
+
+          {/* Price */}
+          <div className="text-right">
+            <p className="text-xl font-bold text-blue-700">
+              {product.price} DH
+            </p>
+            {product.originalPrice && (
+              <p className="text-gray-400 text-sm line-through">
+                {product.originalPrice} DH
+              </p>
+            )}
+          </div>
         </div>
 
         {/* Price Section */}
@@ -59,6 +84,8 @@ export default function ProfessionalProductCard({ product }) {
 
         {/* Buttons */}
         <div className="flex space-x-3 pt-3">
+        {/* Action Buttons - Placé en bas avec mt-auto */}
+        <div className="flex space-x-3 mt-auto">
           <Link
             to={`/shop/product/${product.id}`}
             className="flex-1 bg-blue-600 hover:bg-blue-700 text-white text-center py-2 rounded-lg font-medium transition"

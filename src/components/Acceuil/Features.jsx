@@ -7,7 +7,7 @@ function Features() {
       id: 1,
       icon: '🚚',
       title: 'Livraison Rapide',
-      description: 'Livraison gratuite pour toute commande supérieure à 50€ et livraison en 48h.'
+      description: 'Livraison gratuite pour toute commande supérieure à 500DH et livraison en 48h.'
     },
     {
       id: 2,

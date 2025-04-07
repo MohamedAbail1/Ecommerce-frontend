@@ -10,19 +10,19 @@ export default function Sidebar() {
 
   const handleProfile = () => {
     // Logique pour afficher la page de profil
-    console.log('Navigating to profile...');
+    console.log('Naviguer vers le profil...');
   };
 
   return (
     <div className="w-64 bg-gradient-to-b from-gray-800 to-gray-900 text-white p-4 h-screen sticky top-0">
-      {/* Logo/Brand Section */}
+      {/* Section Logo/Marque */}
       <div className="mb-8 p-2 flex items-center justify-center border-b border-gray-700 pb-4">
         <FontAwesomeIcon icon={faStore} className="h-6 w-6 mr-2 text-blue-400" />
         <span className="text-xl font-bold">ShopSphere</span>
       </div>
 
       <nav className="space-y-1">
-        {/* Main Navigation */}
+        {/* Navigation principale */}
         <Link 
           to="/Dashboard" 
           className="flex items-center hover:bg-gray-700 p-3 rounded-lg transition-all duration-200 group"
@@ -31,7 +31,7 @@ export default function Sidebar() {
             icon={faHome} 
             className="h-5 w-5 mr-3 text-gray-400 group-hover:text-blue-300" 
           />
-          <span className="group-hover:text-white">Dashboard</span>
+          <span className="group-hover:text-white">Tableau de bord</span>
         </Link>
         
         <Link 
@@ -42,7 +42,7 @@ export default function Sidebar() {
             icon={faUsers} 
             className="h-5 w-5 mr-3 text-gray-400 group-hover:text-blue-300" 
           />
-          <span className="group-hover:text-white">Customers</span>
+          <span className="group-hover:text-white">Clients</span>
         </Link>
         
         <Link 
@@ -53,8 +53,7 @@ export default function Sidebar() {
             icon={faShoppingBag} 
             className="h-5 w-5 mr-3 text-gray-400 group-hover:text-blue-300" 
           />
-          <span className="group-hover:text-white">Products</span>
-          <span className="ml-auto bg-blue-500 text-xs px-2 py-1 rounded-full">New</span>
+          <span className="group-hover:text-white">Produits</span>
         </Link>
         
         <Link 
@@ -65,7 +64,7 @@ export default function Sidebar() {
             icon={faBoxOpen} 
             className="h-5 w-5 mr-3 text-gray-400 group-hover:text-blue-300" 
           />
-          <span className="group-hover:text-white">Categories</span>
+          <span className="group-hover:text-white">Catégories</span>
         </Link>
         
         <Link 
@@ -76,11 +75,10 @@ export default function Sidebar() {
             icon={faClipboardList} 
             className="h-5 w-5 mr-3 text-gray-400 group-hover:text-blue-300" 
           />
-          <span className="group-hover:text-white">Orders</span>
-          <span className="ml-auto bg-red-500 text-xs px-2 py-1 rounded-full">3</span>
+          <span className="group-hover:text-white">Commandes</span>
         </Link>
 
-        {/* New Message Link */}
+        {/* Lien pour les messages */}
         <Link 
           to="/messages" 
           className="flex items-center hover:bg-gray-700 p-3 rounded-lg transition-all duration-200 group"
@@ -90,12 +88,11 @@ export default function Sidebar() {
             className="h-5 w-5 mr-3 text-gray-400 group-hover:text-blue-300" 
           />
           <span className="group-hover:text-white">Messages</span>
-          <span className="ml-auto bg-green-500 text-xs px-2 py-1 rounded-full">5</span> {/* Afficher le nombre de messages non lus */}
         </Link>
 
-        {/* Account Section */}
+        {/* Section Compte */}
         <div className="pt-4 mt-4 border-t border-gray-700">
-          <p className="text-xs uppercase text-gray-500 px-3 mb-2">Account</p>
+          <p className="text-xs uppercase text-gray-500 px-3 mb-2">Compte</p>
           
           <div 
             className="flex items-center hover:bg-gray-700 p-3 rounded-lg transition-all duration-200 group cursor-pointer" 
@@ -116,7 +113,7 @@ export default function Sidebar() {
               icon={faCog} 
               className="h-5 w-5 mr-3 text-gray-400 group-hover:text-blue-300" 
             />
-            <span className="group-hover:text-white">Settings</span>
+            <span className="group-hover:text-white">Paramètres</span>
           </div>
           
           <div 

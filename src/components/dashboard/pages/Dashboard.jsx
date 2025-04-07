@@ -86,10 +86,10 @@ export default function Dashboard() {
 
   // Préparer les données pour les graphiques
   const ordersByStatus = {
-    labels: ['Pending', 'Validated', 'Completed', 'Cancelled'],
+    labels: ['En attente', 'Validée', 'Complétée', 'Annulée'],
     datasets: [
       {
-        label: 'Orders by Status',
+        label: 'Commandes par statut',
         data: [
           ordersData.filter(order => order.status === 'pending').length,
           ordersData.filter(order => order.status === 'validated').length,
@@ -108,10 +108,10 @@ export default function Dashboard() {
 
   // Exemple de données pour un graphique de revenus mensuels (à adapter selon vos données)
   const monthlyRevenue = {
-    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+    labels: ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin'],
     datasets: [
       {
-        label: 'Revenue ($)',
+        label: 'Revenu (€)',
         data: [1200, 1900, 1500, 2000, 1800, 2500],
         backgroundColor: 'rgba(75, 192, 192, 0.2)',
         borderColor: 'rgba(75, 192, 192, 1)',
@@ -122,7 +122,6 @@ export default function Dashboard() {
 
   return (
     <div>
-      <Header title="Dashboard" />
       
       {/* Notification des commandes en attente */}
       {pendingOrdersCount > 0 && (
@@ -154,23 +153,23 @@ export default function Dashboard() {
       )}
       
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <StatsCards title="Users" value={usersCount} icon={faUsers} />
-        <StatsCards title="Products" value={productsCount} icon={faShoppingBag} />
-        <StatsCards title="Orders" value={ordersCount} icon={faClipboardList} />
-        <StatsCards title="Revenue" value={`$${revenue}`} icon={faBoxOpen} />
+        <StatsCards title="Utilisateurs" value={usersCount} icon={faUsers} />
+        <StatsCards title="Produits" value={productsCount} icon={faShoppingBag} />
+        <StatsCards title="Commandes" value={ordersCount} icon={faClipboardList} />
+        <StatsCards title="Revenu" value={`$${revenue}`} icon={faBoxOpen} />
       </div>
 
       {/* Section des graphiques */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
         <div className="bg-white p-6 rounded-lg shadow">
-          <h2 className="text-xl font-semibold mb-4">Orders by Status</h2>
+          <h2 className="text-xl font-semibold mb-4">Commandes par statut</h2>
           <div className="h-80">
             <Pie data={ordersByStatus} options={{ maintainAspectRatio: false }} />
           </div>
         </div>
         
         <div className="bg-white p-6 rounded-lg shadow">
-          <h2 className="text-xl font-semibold mb-4">Monthly Revenue</h2>
+          <h2 className="text-xl font-semibold mb-4">Revenu mensuel</h2>
           <div className="h-80">
             <Bar data={monthlyRevenue} options={{ maintainAspectRatio: false }} />
           </div>
@@ -179,7 +178,7 @@ export default function Dashboard() {
 
       {/* Un autre graphique en pleine largeur */}
       <div className="bg-white p-6 rounded-lg shadow mb-8">
-        <h2 className="text-xl font-semibold mb-4">Revenue Trend</h2>
+        <h2 className="text-xl font-semibold mb-4">Tendance du revenu</h2>
         <div className="h-96">
           <Line data={monthlyRevenue} options={{ maintainAspectRatio: false }} />
         </div>

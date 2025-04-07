@@ -1,5 +1,8 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import IsmailImage from '../../assets/WhatsApp Image 2025-04-02 à 22.00.01_7f76e3e0.jpg';
+import MohamedImage from '../../assets/WhatsApp Image 2025-04-02 à 21.56.48_72b8884e.jpg';
+import hamzaImage from '../../assets/WhatsApp Image 2025-04-02 à 23.48.39_3fb7aa06.jpg';
 export default function AboutPage() {
   const [activeTab, setActiveTab] = useState('histoire');
   
@@ -74,28 +77,45 @@ export default function AboutPage() {
             )}
             
             {activeTab === 'équipe' && (
-              <div>
-                <h2 className="text-3xl font-bold text-gray-900 mb-6">Notre Équipe</h2>
-                <div className="prose max-w-none text-gray-600">
-                  <p className="mb-6">
-                    Derrière chaque commande chez ShopFlex se trouve une équipe dévouée de professionnels passionnés par l'innovation et le service client. Notre équipe diverse apporte une richesse d'expériences et de perspectives qui nous permettent de mieux servir notre clientèle internationale.
-                  </p>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-8">
-                    {[
-                      { name: 'Ismail Roumani', role: 'Fondatrice & CEO' },
-                      { name: 'Hamza chagane', role: 'Directeur Marketing' },
-                      { name: 'Mohammed Abail', role: 'Responsable Relation Client' },
-                     
-                    ].map((member) => (
-                      <div key={member.name} className="bg-white p-6 rounded-lg shadow-sm">
-                        <div className="w-20 h-20 bg-gray-200 rounded-full mb-4 mx-auto"></div>
-                        <h3 className="text-xl font-semibold text-center">{member.name}</h3>
-                        <p className="text-gray-500 text-center">{member.role}</p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
+             <div>
+             <h2 className="text-3xl font-bold text-gray-900 mb-6">Notre Équipe</h2>
+             <div className="prose max-w-none text-gray-600">
+               <p className="mb-6">
+                 Derrière chaque commande chez ShopFlex se trouve une équipe dévouée de professionnels passionnés par l'innovation et le service client. Notre équipe diverse apporte une richesse d'expériences et de perspectives qui nous permettent de mieux servir notre clientèle internationale.
+               </p>
+               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-8">
+                 {[
+                   { 
+                     name: 'Ismail Roumani', 
+                     role: 'Fondatrice & CEO',
+                     image:IsmailImage
+                   },
+                   { 
+                     name: 'Hamza Chagane', 
+                     role: 'Directeur Marketing',
+                     image:hamzaImage
+                   },
+                   { 
+                     name: 'Mohammed Abail', 
+                     role: 'Responsable Relation Client',
+                     image: MohamedImage
+                   }
+                 ].map((member) => (
+                   <div key={member.name} className="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow">
+                     <div className="w-20 h-20 rounded-full mb-4 mx-auto overflow-hidden border-2 border-gray-100">
+                       <img 
+                         src={member.image} 
+                         alt={member.name}
+                         className="w-full h-full object-cover"
+                       />
+                     </div>
+                     <h3 className="text-xl font-semibold text-center">{member.name}</h3>
+                     <p className="text-gray-500 text-center">{member.role}</p>
+                   </div>
+                 ))}
+               </div>
+             </div>
+           </div>
             )}
             
             {activeTab === 'valeurs' && (
@@ -170,25 +190,48 @@ export default function AboutPage() {
       
       {/* Testimonials */}
       <div className="bg-gray-100 py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">Ce que nos clients disent</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {[
-              { name: 'Marie L.', text: 'ShopFlex a complètement transformé ma façon de faire du shopping en ligne. La qualité des produits est incomparable et le service client est toujours réactif.' },
-              { name: 'Pierre D.', text: 'Je suis client depuis plus de 3 ans et je n\'ai jamais été déçu. Les livraisons sont rapides et les produits correspondent toujours parfaitement aux descriptions.' },
-              { name: 'Julie M.', text: 'J\'apprécie particulièrement l\'engagement de ShopFlex envers la durabilité. C\'est rare de trouver une entreprise qui prend autant au sérieux sa responsabilité environnementale.' }
-            ].map((testimonial, index) => (
-              <div key={index} className="bg-white p-6 rounded-lg shadow-sm">
-                <div className="flex items-center mb-4">
-                  <div className="w-12 h-12 bg-gray-200 rounded-full mr-4"></div>
-                  <h3 className="text-lg font-semibold">{testimonial.name}</h3>
-                </div>
-                <p className="text-gray-600 italic">"{testimonial.text}"</p>
-              </div>
+  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">Ce que nos clients disent</h2>
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      {[
+        { 
+          name: 'Marie L.', 
+          text: 'ShopFlex a complètement transformé ma façon de faire du shopping en ligne. La qualité des produits est incomparable et le service client est toujours réactif.',
+          image: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-1.2.1&auto=format&fit=crop&w=200&h=200&q=80' 
+        },
+        { 
+          name: 'Pierre D.', 
+          text: 'Je suis client depuis plus de 3 ans et je n\'ai jamais été déçu. Les livraisons sont rapides et les produits correspondent toujours parfaitement aux descriptions.',
+          image: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-1.2.1&auto=format&fit=crop&w=200&h=200&q=80'
+        },
+        { 
+          name: 'Julie M.', 
+          text: 'J\'apprécie particulièrement l\'engagement de ShopFlex envers la durabilité. C\'est rare de trouver une entreprise qui prend autant au sérieux sa responsabilité environnementale.',
+          image: 'https://images.unsplash.com/photo-1554151228-14d9def656e4?ixlib=rb-1.2.1&auto=format&fit=crop&w=200&h=200&q=80'
+        }
+      ].map((testimonial, index) => (
+        <div key={index} className="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300">
+          <div className="flex items-center mb-4">
+            <img 
+              src={testimonial.image} 
+              alt={testimonial.name}
+              className="w-12 h-12 rounded-full mr-4 object-cover border-2 border-gray-200"
+            />
+            <h3 className="text-lg font-semibold">{testimonial.name}</h3>
+          </div>
+          <p className="text-gray-600 italic">"{testimonial.text}"</p>
+          <div className="mt-4 flex text-yellow-400">
+            {[...Array(5)].map((_, i) => (
+              <svg key={i} xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+              </svg>
             ))}
           </div>
         </div>
-      </div>
+      ))}
+    </div>
+  </div>
+</div>
     </div>
   );
 }

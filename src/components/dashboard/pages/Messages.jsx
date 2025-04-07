@@ -1,19 +1,20 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
-import { FaEye, FaSearch, FaTimes, FaCheck, FaBan, FaBox, FaSpinner } from "react-icons/fa";
+import { FaEye, FaSearch, FaTimes, FaReply, FaEnvelope, FaSpinner, FaTrash } from "react-icons/fa";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-export default function Orders() {
-  const [orders, setOrders] = useState([]);
-  const [filteredOrders, setFilteredOrders] = useState([]);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [selectedOrder, setSelectedOrder] = useState(null);
-  const [showModal, setShowModal] = useState(false);
-  const [isUpdating, setIsUpdating] = useState(false);
+export default function Messages() {
+  const [messages, setMessages] = useState([]);
+  const [messagesFiltres, setMessagesFiltres] = useState([]);
+  const [termeRecherche, setTermeRecherche] = useState("");
+  const [chargement, setChargement] = useState(true);
+  const [erreur, setErreur] = useState(null);
+  const [messageSelectionne, setMessageSelectionne] = useState(null);
+  const [afficherModal, setAfficherModal] = useState(false);
+  const [enMiseAJour, setEnMiseAJour] = useState(false);
+  const [contenuReponse, setContenuReponse] = useState("");
   const navigate = useNavigate();
 
   const token = localStorage.getItem("token");
@@ -24,137 +25,197 @@ export default function Orders() {
       return;
     }
 
-    fetchOrders();
+    fetchMessages();
   }, [token, navigate]);
 
-  const fetchOrders = async () => {
+  // Fonction gardée en anglais pour l'API
+  const fetchMessages = async () => {
     try {
-      const response = await fetch("http://localhost:8000/api/admin/orders", {
+      const response = await fetch("http://localhost:8000/api/admin/contact", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
 
-      if (!response.ok) throw new Error("Failed to fetch orders");
+      if (!response.ok) throw new Error("Échec de la récupération des messages");
       
       const data = await response.json();
-      // Trier les commandes pour mettre "pending" en premier
-      const sortedOrders = [...data].sort((a, b) => {
-        if (a.status === 'pending' && b.status !== 'pending') return -1;
-        if (a.status !== 'pending' && b.status === 'pending') return 1;
-        return 0;
+      const messagesTries = [...data].sort((a, b) => {
+        if (a.status === 'unread' && b.status !== 'unread') return -1;
+        if (a.status !== 'unread' && b.status === 'unread') return 1;
+        return new Date(b.created_at) - new Date(a.created_at);
       });
       
-      setOrders(sortedOrders);
-      setFilteredOrders(sortedOrders);
-      setLoading(false);
+      setMessages(messagesTries);
+      setMessagesFiltres(messagesTries);
+      setChargement(false);
     } catch (error) {
-      setError(error.message);
-      setLoading(false);
+      setErreur(error.message);
+      setChargement(false);
     }
   };
 
-  const handleSearch = (e) => {
-    const value = e.target.value.toLowerCase();
-    setSearchTerm(value);
-
-    const filtered = orders.filter((order) => {
+  const gererRecherche = (e) => {
+    const valeur = e.target.value.toLowerCase();
+    setTermeRecherche(valeur);
+  
+    const filtres = messages.filter((message) => {
       return (
-        order.id.toString().includes(value) ||
-        order.user?.name.toLowerCase().includes(value)
+        message.id.toString().includes(valeur) ||
+        message.name.toLowerCase().includes(valeur) || // Gardé en anglais
+        message.email.toLowerCase().includes(valeur) || // Gardé en anglais
+        message.subject.toLowerCase().includes(valeur) // Gardé en anglais
       );
     });
-
-    // Trier les résultats filtrés pour mettre "pending" en premier
-    const sortedFiltered = [...filtered].sort((a, b) => {
-      if (a.status === 'pending' && b.status !== 'pending') return -1;
-      if (a.status !== 'pending' && b.status === 'pending') return 1;
-      return 0;
+  
+    const filtresTries = [...filtres].sort((a, b) => {
+      if (a.status === 'unread' && b.status !== 'unread') return -1;
+      if (a.status !== 'unread' && b.status === 'unread') return 1;
+      return new Date(b.created_at) - new Date(a.created_at);
     });
-
-    setFilteredOrders(sortedFiltered);
+  
+    setMessagesFiltres(filtresTries);
   };
 
-  const handleView = (order) => {
-    setSelectedOrder(order);
-    setShowModal(true);
+  const afficherDetails = (message) => {
+    setMessageSelectionne(message);
+    setAfficherModal(true);
+    if (message.status === 'unread') {
+      updateMessageStatus(message.id, 'read');
+    }
   };
 
-  const closeModal = () => {
-    setShowModal(false);
-    setSelectedOrder(null);
+  const fermerModal = () => {
+    setAfficherModal(false);
+    setMessageSelectionne(null);
+    setContenuReponse("");
   };
 
-  const updateOrderStatus = async (id, newStatus) => {
-    setIsUpdating(true);
+  // Fonction gardée en anglais pour l'API
+  const updateMessageStatus = async (id, newStatus) => {
+    setEnMiseAJour(true);
     try {
-      const response = await fetch(`http://localhost:8000/api/admin/orders/${id}/status`, {
+      const response = await fetch(`http://localhost:8000/api/admin/contact/${id}/status`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ status: newStatus }),
+        body: JSON.stringify({ status: newStatus }), // Gardé en anglais
       });
 
-      if (!response.ok) throw new Error("Failed to update order status");
+      if (!response.ok) throw new Error("Échec de la mise à jour du statut du message");
       
-      fetchOrders();
-      if (selectedOrder?.id === id) {
-        closeModal();
+      fetchMessages();
+      if (messageSelectionne?.id === id) {
+        setMessageSelectionne({...messageSelectionne, status: newStatus});
       }
-      toast.success(`Order ${newStatus} successfully!`, {
-        className: "bg-green-50 text-green-800 border-l-4 border-green-500",
-      });
     } catch (error) {
       toast.error(error.message, {
         className: "bg-red-50 text-red-800 border-l-4 border-red-500",
       });
     } finally {
-      setIsUpdating(false);
+      setEnMiseAJour(false);
     }
   };
 
-  const confirmUpdateStatus = (id, newStatus) => {
+  const envoyerReponse = async () => {
+    if (!contenuReponse.trim()) {
+      toast.error("Le contenu de la réponse ne peut pas être vide", {
+        className: "bg-red-50 text-red-800 border-l-4 border-red-500",
+      });
+      return;
+    }
+
+    setEnMiseAJour(true);
+    try {
+      const response = await fetch(`http://localhost:8000/api/admin/contact/${messageSelectionne.id}/reply`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ reply: contenuReponse }), // Gardé en anglais
+      });
+
+      if (!response.ok) throw new Error("Échec de l'envoi de la réponse");
+      
+      toast.success("Réponse envoyée avec succès !", {
+        className: "bg-green-50 text-green-800 border-l-4 border-green-500",
+      });
+      setContenuReponse("");
+      fetchMessages();
+    } catch (error) {
+      toast.error(error.message, {
+        className: "bg-red-50 text-red-800 border-l-4 border-red-500",
+      });
+    } finally {
+      setEnMiseAJour(false);
+    }
+  };
+
+  const supprimerMessage = async (id) => {
     toast.info(
       <div className="p-3">
-        <p className="text-gray-700 mb-3">Are you sure you want to {newStatus} this order?</p>
+        <p className="text-gray-700 mb-3">Voulez-vous vraiment supprimer ce message ?</p>
         <div className="flex gap-3 justify-center">
           <button 
             onClick={async () => {
-              await updateOrderStatus(id, newStatus);
-              toast.dismiss();
+              setEnMiseAJour(true);
+              try {
+                const response = await fetch(`http://localhost:8000/api/admin/contact/${id}`, {
+                  method: "DELETE",
+                  headers: {
+                    "Authorization": `Bearer ${token}`,
+                  },
+                });
+  
+                if (!response.ok) throw new Error("Échec de la suppression du message");
+  
+                toast.success("Message supprimé avec succès !", {
+                  className: "bg-green-50 text-green-800 border-l-4 border-green-500",
+                });
+  
+                fetchMessages();
+                if (messageSelectionne?.id === id) {
+                  fermerModal();
+                }
+              } catch (error) {
+                toast.error(error.message, {
+                  className: "bg-red-50 text-red-800 border-l-4 border-red-500",
+                });
+              } finally {
+                setEnMiseAJour(false);
+                toast.dismiss();
+              }
             }} 
-            className={`px-4 py-2 bg-gradient-to-r ${
-              newStatus === 'validated' ? 'from-green-500 to-green-600 hover:from-green-600 hover:to-green-700' 
-              : 'from-red-500 to-red-600 hover:from-red-600 hover:to-red-700'
-            } text-white rounded-lg transition-all shadow-md`}
+            className="px-4 py-2 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-lg hover:from-red-600 hover:to-red-700 transition-all shadow-md"
           >
-            Confirm
+            Oui, supprimer
           </button>
           <button 
             onClick={() => toast.dismiss()} 
             className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-all"
           >
-            Cancel
+            Annuler
           </button>
         </div>
       </div>,
       { autoClose: false, closeOnClick: false, className: "bg-white" }
     );
   };
-
-  if (loading) return (
+  
+  if (chargement) return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 flex items-center justify-center">
       <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-600"></div>
     </div>
   );
   
-  if (error) return (
+  if (erreur) return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 flex items-center justify-center">
       <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-6 rounded-lg max-w-md">
-        <h3 className="font-bold text-lg mb-2">Loading Error</h3>
-        <p>{error}</p>
+        <h3 className="font-bold text-lg mb-2">Erreur de chargement</h3>
+        <p>{erreur}</p>
       </div>
     </div>
   );
@@ -164,48 +225,45 @@ export default function Orders() {
       <div className="max-w-7xl mx-auto space-y-6">
         <ToastContainer position="top-right" autoClose={5000} />
         
-        {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
             <h1 className="text-2xl md:text-3xl font-bold text-gray-800 flex items-center gap-2">
-              <FaBox className="text-purple-600 text-2xl" />
-              Orders Management
+              <FaEnvelope className="text-purple-600 text-2xl" />
+              Gestion des messages
             </h1>
-            <p className="text-sm text-gray-500 mt-1">View and manage customer orders</p>
+            <p className="text-sm text-gray-500 mt-1">Visualisez et gérez les messages des clients</p>
           </div>
           
-          {/* Search Bar */}
           <div className="relative w-full sm:w-64">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <FaSearch className="text-gray-400" />
             </div>
             <input
               type="text"
-              placeholder="Search orders..."
-              value={searchTerm}
-              onChange={handleSearch}
+              placeholder="Rechercher des messages..."
+              value={termeRecherche}
+              onChange={gererRecherche}
               className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all"
             />
           </div>
         </div>
 
-        {/* Orders Table */}
         <div className="bg-white rounded-2xl shadow-md overflow-hidden">
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gradient-to-r from-purple-50 to-blue-50">
                 <tr>
                   <th scope="col" className="px-6 py-4 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
-                    Order ID
+                    ID
                   </th>
                   <th scope="col" className="px-6 py-4 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
-                    Customer
+                    Expéditeur
                   </th>
                   <th scope="col" className="px-6 py-4 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
-                    Total
+                    Sujet
                   </th>
                   <th scope="col" className="px-6 py-4 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
-                    Status
+                    Date
                   </th>
                   <th scope="col" className="px-6 py-4 text-right text-xs font-medium text-gray-600 uppercase tracking-wider">
                     Actions
@@ -213,58 +271,55 @@ export default function Orders() {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {filteredOrders.length > 0 ? (
-                  filteredOrders.map((order) => (
-                    <tr key={order.id} className="hover:bg-gray-50 transition-colors">
+                {messagesFiltres.length > 0 ? (
+                  messagesFiltres.map((message) => (
+                    <tr 
+                      key={message.id} 
+                      className={`hover:bg-gray-50 transition-colors ${message.status === 'unread' ? 'bg-blue-50' : ''}`}
+                    >
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                        #{order.id}
+                        #{message.id}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm text-gray-900 font-medium">{message.name}</div> {/* Gardé en anglais */}
+                        <div className="text-sm text-gray-500">{message.email}</div> {/* Gardé en anglais */}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 max-w-xs truncate">
+                        {message.subject} {/* Gardé en anglais */}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        <span className="font-medium text-gray-800">{order.user?.name || "Unknown"}</span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        ${order.total_amount}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        <span className={`px-2 py-1 rounded-full text-xs capitalize ${
-                          order.status === 'completed' ? 'bg-green-100 text-green-800' :
-                          order.status === 'validated' ? 'bg-blue-100 text-blue-800' :
-                          order.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
-                          order.status === 'cancelled' ? 'bg-red-100 text-red-800' :
-                          'bg-gray-100 text-gray-800'
-                        }`}>
-                          {order.status}
-                        </span>
+                        {new Date(message.created_at).toLocaleDateString()} {/* Gardé en anglais */}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                         <div className="flex justify-end space-x-2">
                           <button
-                            onClick={() => handleView(order)}
+                            onClick={() => afficherDetails(message)}
                             className="text-blue-600 hover:text-blue-900 p-2 rounded-lg hover:bg-blue-50 transition-colors"
-                            title="View details"
+                            title="Voir le message"
                           >
                             <FaEye className="h-5 w-5" />
                           </button>
-                          {order.status === 'pending' && (
-                            <>
-                              <button
-                                onClick={() => confirmUpdateStatus(order.id, "validated")}
-                                className="text-green-600 hover:text-green-900 p-2 rounded-lg hover:bg-green-50 transition-colors"
-                                title="Validate order"
-                                disabled={isUpdating}
-                              >
-                                <FaCheck className="h-5 w-5" />
-                              </button>
-                              <button
-                                onClick={() => confirmUpdateStatus(order.id, "cancelled")}
-                                className="text-red-600 hover:text-red-900 p-2 rounded-lg hover:bg-red-50 transition-colors"
-                                title="Cancel order"
-                                disabled={isUpdating}
-                              >
-                                <FaBan className="h-5 w-5" />
-                              </button>
-                            </>
+                          {message.status !== 'replied' && ( /* Gardé en anglais */
+                            <button
+                              onClick={() => {
+                                afficherDetails(message);
+                                document.getElementById('reply-textarea')?.focus();
+                              }}
+                              className="text-purple-600 hover:text-purple-900 p-2 rounded-lg hover:bg-purple-50 transition-colors"
+                              title="Répondre au message"
+                            >
+                              <FaReply className="h-5 w-5" />
+                            </button>
                           )}
+                          <button
+                            onClick={() => supprimerMessage(message.id)}
+                            className="text-red-600 hover:text-red-900 p-2 rounded-lg hover:bg-red-50 transition-colors"
+                            title="Supprimer"
+                          >
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                          </button>
                         </div>
                       </td>
                     </tr>
@@ -273,19 +328,19 @@ export default function Orders() {
                   <tr>
                     <td colSpan="5" className="px-6 py-12 text-center">
                       <div className="flex flex-col items-center justify-center text-gray-400">
-                        <FaBox className="h-12 w-12" />
+                        <FaEnvelope className="h-12 w-12" />
                         <p className="mt-2 text-sm font-medium text-gray-500">
-                          {searchTerm ? "No orders found" : "No orders exist"}
+                          {termeRecherche ? "Aucun message trouvé" : "Aucun message existant"}
                         </p>
-                        {searchTerm ? (
+                        {termeRecherche ? (
                           <button
-                            onClick={() => setSearchTerm("")}
+                            onClick={() => setTermeRecherche("")}
                             className="mt-4 text-purple-600 hover:text-purple-800 text-sm font-medium"
                           >
-                            Reset search
+                            Réinitialiser la recherche
                           </button>
                         ) : (
-                          <p className="mt-1 text-sm text-gray-500">When orders are placed, they will appear here</p>
+                          <p className="mt-1 text-sm text-gray-500">Lorsque des messages seront reçus, ils apparaîtront ici</p>
                         )}
                       </div>
                     </td>
@@ -297,14 +352,13 @@ export default function Orders() {
         </div>
       </div>
 
-      {/* Order Details Modal */}
-      {showModal && selectedOrder && (
+      {afficherModal && messageSelectionne && (
         <div className="fixed inset-0 bg-gray-100/90 backdrop-blur-sm flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-2xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto relative border border-gray-200">
             <div className="flex justify-between items-center border-b p-4 sticky top-0 bg-white z-10">
-              <h3 className="font-semibold text-xl text-gray-800">Order Details</h3>
+              <h3 className="font-semibold text-xl text-gray-800">Détails du message</h3>
               <button
-                onClick={closeModal}
+                onClick={fermerModal}
                 className="text-gray-500 hover:text-gray-700 transition p-2 rounded-full hover:bg-gray-100"
               >
                 <FaTimes className="w-5 h-5" />
@@ -313,93 +367,95 @@ export default function Orders() {
             <div className="p-6 space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <p className="text-sm text-gray-500 mb-1">Order ID</p>
-                  <p className="font-medium">#{selectedOrder.id}</p>
+                  <p className="text-sm text-gray-500 mb-1">ID du message</p>
+                  <p className="font-medium">#{messageSelectionne.id}</p>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-500 mb-1">Customer</p>
-                  <p className="font-medium">{selectedOrder.user?.name || "Unknown"}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-gray-500 mb-1">Status</p>
+                  <p className="text-sm text-gray-500 mb-1">Statut</p>
                   <p className={`font-medium capitalize ${
-                    selectedOrder.status === 'completed' ? 'text-green-600' :
-                    selectedOrder.status === 'validated' ? 'text-blue-600' :
-                    selectedOrder.status === 'pending' ? 'text-yellow-600' :
-                    selectedOrder.status === 'cancelled' ? 'text-red-600' :
+                    messageSelectionne.status === 'read' ? 'text-green-600' : /* Gardé en anglais */
+                    messageSelectionne.status === 'unread' ? 'text-blue-600' : /* Gardé en anglais */
+                    messageSelectionne.status === 'replied' ? 'text-purple-600' : /* Gardé en anglais */
                     'text-gray-600'
                   }`}>
-                    {selectedOrder.status}
+                    {messageSelectionne.status === 'read' ? 'lu' : /* Traduction affichée */
+                     messageSelectionne.status === 'unread' ? 'non lu' :
+                     messageSelectionne.status === 'replied' ? 'répondu' :
+                     messageSelectionne.status}
                   </p>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-500 mb-1">Total Amount</p>
-                  <p className="font-medium">${selectedOrder.total_amount}</p>
+                  <p className="text-sm text-gray-500 mb-1">Expéditeur</p>
+                  <p className="font-medium">{messageSelectionne.name}</p> {/* Gardé en anglais */}
+                  <p className="text-sm text-gray-600">{messageSelectionne.email}</p> {/* Gardé en anglais */}
+                </div>
+                <div>
+                  <p className="text-sm text-gray-500 mb-1">Date</p>
+                  <p className="font-medium">{new Date(messageSelectionne.created_at).toLocaleString()}</p> {/* Gardé en anglais */}
                 </div>
               </div>
 
-              <div className="mt-6">
-                <h4 className="font-semibold text-lg mb-4 pb-2 border-b text-gray-800">Products</h4>
-                <div className="space-y-4">
-                  {selectedOrder.products.length > 0 ? (
-                    selectedOrder.products.map((product) => (
-                      <div
-                        key={product.id}
-                        className="flex items-start pb-4 border-b border-gray-100"
-                      >
-                        <img
-                          src={product.image || "https://via.placeholder.com/80"}
-                          alt={product.name}
-                          className="w-16 h-16 object-cover rounded mr-4 border border-gray-200"
-                        />
-                        <div className="flex-1">
-                          <p className="font-semibold text-gray-800">{product.name}</p>
-                          <p className="text-sm text-gray-600 mb-2 line-clamp-2">
-                            {product.description}
-                          </p>
-                          <div className="grid grid-cols-3 gap-2 text-sm">
-                            <span className="text-gray-500">Price:</span>
-                            <span className="text-gray-500">Quantity:</span>
-                            <span className="text-gray-500">Subtotal:</span>
-                            <span>${product.price}</span>
-                            <span>{product.pivot.quantity}</span>
-                            <span>${(product.price * product.pivot.quantity).toFixed(2)}</span>
-                          </div>
-                        </div>
-                      </div>
-                    ))
-                  ) : (
-                    <p className="text-gray-500 py-4 text-center">No products in this order.</p>
-                  )}
+              <div>
+                <p className="text-sm text-gray-500 mb-1">Sujet</p>
+                <p className="font-medium text-lg mb-4">{messageSelectionne.subject}</p> {/* Gardé en anglais */}
+                
+                <p className="text-sm text-gray-500 mb-1">Message</p>
+                <div className="bg-gray-50 p-4 rounded-lg whitespace-pre-line">
+                  {messageSelectionne.message} {/* Gardé en anglais */}
                 </div>
               </div>
-            </div>
-            <div className="border-t p-4 flex justify-between sticky bottom-0 bg-white">
-              {selectedOrder.status === 'pending' && (
-                <div className="flex space-x-2">
-                  <button
-                    onClick={() => confirmUpdateStatus(selectedOrder.id, "validated")}
-                    className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg hover:from-green-600 hover:to-green-700 transition-all shadow-md"
-                    disabled={isUpdating}
-                  >
-                    {isUpdating ? <FaSpinner className="animate-spin" /> : <FaCheck />}
-                    <span>Validate Order</span>
-                  </button>
-                  <button
-                    onClick={() => confirmUpdateStatus(selectedOrder.id, "cancelled")}
-                    className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-lg hover:from-red-600 hover:to-red-700 transition-all shadow-md"
-                    disabled={isUpdating}
-                  >
-                    {isUpdating ? <FaSpinner className="animate-spin" /> : <FaBan />}
-                    <span>Cancel Order</span>
-                  </button>
+
+              {messageSelectionne.status === 'replied' && messageSelectionne.reply && ( /* Gardé en anglais */
+                <div>
+                  <p className="text-sm text-gray-500 mb-1">Votre réponse</p>
+                  <div className="bg-purple-50 p-4 rounded-lg whitespace-pre-line">
+                    {messageSelectionne.reply} /* Gardé en anglais */
+                  </div>
                 </div>
               )}
+
+              {messageSelectionne.status !== 'replied' && ( /* Gardé en anglais */
+                <div>
+                  <label htmlFor="reply-textarea" className="block text-sm font-medium text-gray-700 mb-2">
+                    Répondre à ce message
+                  </label>
+                  <textarea
+                    id="reply-textarea"
+                    rows={4}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                    placeholder="Tapez votre réponse ici..."
+                    value={contenuReponse}
+                    onChange={(e) => setContenuReponse(e.target.value)}
+                  />
+                </div>
+              )}
+            </div>
+            <div className="border-t p-4 flex justify-between sticky bottom-0 bg-white">
+              <div className="flex space-x-2">
+                {messageSelectionne.status !== 'replied' && ( /* Gardé en anglais */
+                  <button
+                    onClick={envoyerReponse}
+                    className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-lg hover:from-purple-600 hover:to-purple-700 transition-all shadow-md"
+                    disabled={enMiseAJour || !contenuReponse.trim()}
+                  >
+                    {enMiseAJour ? <FaSpinner className="animate-spin" /> : <FaReply />}
+                    <span>Envoyer la réponse</span>
+                  </button>
+                )}
+                <button
+                  onClick={() => supprimerMessage(messageSelectionne.id)}
+                  className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-lg hover:from-red-600 hover:to-red-700 transition-all shadow-md"
+                  disabled={enMiseAJour}
+                >
+                  {enMiseAJour ? <FaSpinner className="animate-spin" /> : <FaTrash />}
+                  <span>Supprimer le message</span>
+                </button>
+              </div>
               <button
-                onClick={closeModal}
+                onClick={fermerModal}
                 className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-all"
               >
-                Close
+                Fermer
               </button>
             </div>
           </div>

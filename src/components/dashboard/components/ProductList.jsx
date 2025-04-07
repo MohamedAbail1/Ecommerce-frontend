@@ -4,11 +4,11 @@ import ProductForm from './ProductForm';
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-export default function ProductList() {
-  const [products, setProducts] = useState([]);
+export default function ListeProduits() {
+  const [produits, setProduits] = useState([]);
   const [categories, setCategories] = useState({}); // Pour stocker les noms des catégories
-  const [selectedProduct, setSelectedProduct] = useState(null);
-  const [showForm, setShowForm] = useState(false);
+  const [produitSelectionne, setProduitSelectionne] = useState(null);
+  const [afficherFormulaire, setAfficherFormulaire] = useState(false);
 
   // Récupérer le token depuis localStorage
   const token = localStorage.getItem("token");
@@ -16,52 +16,52 @@ export default function ProductList() {
   useEffect(() => {
     // Si un token est trouvé, on peut récupérer les produits et les catégories
     if (token) {
-      fetchProducts();
-      fetchCategories();
+      recupererProduits();
+      recupererCategories();
     } else {
       console.log("Token non trouvé. Vous devez vous connecter.");
     }
   }, [token]);
 
-  const fetchProducts = async () => {
+  const recupererProduits = async () => {
     try {
-      const response = await axios.get('http://127.0.0.1:8000/api/products', {
+      const reponse = await axios.get('http://127.0.0.1:8000/api/products', {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      setProducts(response.data);
+      setProduits(reponse.data);
     } catch (error) {
       console.error('Erreur lors de la récupération des produits', error);
     }
   };
 
-  const fetchCategories = async () => {
+  const recupererCategories = async () => {
     try {
-      const response = await axios.get('http://127.0.0.1:8000/api/categories', {
+      const reponse = await axios.get('http://127.0.0.1:8000/api/categories', {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
       // Convertir le tableau de catégories en objet pour un accès facile par ID
-      const categoriesMap = {};
-      response.data.forEach(category => {
-        categoriesMap[category.id] = category.name;
+      const mapCategories = {};
+      reponse.data.forEach(categorie => {
+        mapCategories[categorie.id] = categorie.name;
       });
-      setCategories(categoriesMap);
+      setCategories(mapCategories);
     } catch (error) {
       console.error('Erreur lors de la récupération des catégories', error);
     }
   };
 
-  const deleteProduct = async (id) => {
+  const supprimerProduit = async (id) => {
     try {
       await axios.delete(`http://127.0.0.1:8000/api/admin/products/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      fetchProducts();
+      recupererProduits();
       toast.success('Produit supprimé avec succès !'); // Notification de succès
     } catch (error) {
       console.error('Erreur lors de la suppression du produit', error);
@@ -69,56 +69,56 @@ export default function ProductList() {
     }
   };
 
-  const handleAddClick = () => {
-    setSelectedProduct(null); // Aucun produit sélectionné = ajout
-    setShowForm(true);
+  const gererAjoutClic = () => {
+    setProduitSelectionne(null); // Aucun produit sélectionné = ajout
+    setAfficherFormulaire(true);
   };
 
-  const handleEditClick = (product) => {
-    setSelectedProduct(product); // Produit à éditer
-    setShowForm(true);
+  const gererEditionClic = (produit) => {
+    setProduitSelectionne(produit); // Produit à éditer
+    setAfficherFormulaire(true);
   };
 
-  const handleCloseForm = () => {
-    setShowForm(false);
-    setSelectedProduct(null);
+  const gererFermerFormulaire = () => {
+    setAfficherFormulaire(false);
+    setProduitSelectionne(null);
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 p-4 md:p-8">
       <div className="max-w-7xl mx-auto space-y-6">
-        {/* Header with Add Button */}
+        {/* En-tête avec bouton d'ajout */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
             <h1 className="text-2xl md:text-3xl font-bold text-gray-800 flex items-center gap-2">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
               </svg>
-              Product Inventory
+              Inventaire des Produits
             </h1>
-            <p className="text-sm text-gray-500 mt-1">Manage your product catalog</p>
+            <p className="text-sm text-gray-500 mt-1">Gérez votre catalogue de produits</p>
           </div>
           <button
-            onClick={handleAddClick}
+            onClick={gererAjoutClic}
             className="flex items-center gap-2 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-medium py-2.5 px-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300"
           >
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
             </svg>
-            Add Product
+            Ajouter un Produit
           </button>
         </div>
   
-        {/* Product Form Modal */}
-        {showForm && (
+        {/* Formulaire de produit Modal */}
+        {afficherFormulaire && (
           <ProductForm
-            product={selectedProduct}
-            onSubmit={fetchProducts}
-            onClose={handleCloseForm}
+            product={produitSelectionne}
+            onSubmit={recupererProduits}
+            onClose={gererFermerFormulaire}
           />
         )}
   
-        {/* Products Table */}
+        {/* Tableau des Produits */}
         <div className="bg-white rounded-2xl shadow-md overflow-hidden">
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
@@ -128,16 +128,16 @@ export default function ProductList() {
                     ID
                   </th>
                   <th scope="col" className="px-6 py-4 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
-                    Product
+                    Produit
                   </th>
                   <th scope="col" className="px-6 py-4 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
-                    Price
+                    Prix
                   </th>
                   <th scope="col" className="px-6 py-4 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
                     Stock
                   </th>
                   <th scope="col" className="px-6 py-4 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
-                    Category
+                    Catégorie
                   </th>
                   <th scope="col" className="px-6 py-4 text-right text-xs font-medium text-gray-600 uppercase tracking-wider">
                     Actions
@@ -145,41 +145,41 @@ export default function ProductList() {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {products.length > 0 ? (
-                  products.map((product) => (
-                    <tr key={product.id} className="hover:bg-gray-50 transition-colors">
+                {produits.length > 0 ? (
+                  produits.map((produit) => (
+                    <tr key={produit.id} className="hover:bg-gray-50 transition-colors">
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                        #{product.id}
+                        #{produit.id}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm font-medium text-gray-900">{product.name}</div>
+                        <div className="text-sm font-medium text-gray-900">{produit.name}</div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-semibold">
-                        ${parseFloat(product.price).toFixed(2)}
+                        ${parseFloat(produit.price).toFixed(2)}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${product.stock > 10 ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800'}`}>
-                          {product.stock} in stock
+                        <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${produit.stock > 10 ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800'}`}>
+                          {produit.stock} en stock
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                         {categories[product.category_id] || 'N/A'}
+                         {categories[produit.category_id] || 'N/A'}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                         <div className="flex justify-end space-x-2">
                           <button
-                            onClick={() => handleEditClick(product)}
+                            onClick={() => gererEditionClic(produit)}
                             className="text-blue-600 hover:text-blue-900 p-2 rounded-lg hover:bg-blue-50 transition-colors"
-                            title="Edit"
+                            title="Éditer"
                           >
                             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                             </svg>
                           </button>
                           <button
-                            onClick={() => deleteProduct(product.id)}
+                            onClick={() => supprimerProduit(produit.id)}
                             className="text-red-600 hover:text-red-900 p-2 rounded-lg hover:bg-red-50 transition-colors"
-                            title="Delete"
+                            title="Supprimer"
                           >
                             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -196,12 +196,12 @@ export default function ProductList() {
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
                         </svg>
-                        <p className="mt-2 text-sm font-medium text-gray-500">No products found</p>
+                        <p className="mt-2 text-sm font-medium text-gray-500">Aucun produit trouvé</p>
                         <button
-                          onClick={handleAddClick}
+                          onClick={gererAjoutClic}
                           className="mt-4 text-purple-600 hover:text-purple-800 text-sm font-medium"
                         >
-                          Add your first product
+                          Ajouter votre premier produit
                         </button>
                       </div>
                     </td>

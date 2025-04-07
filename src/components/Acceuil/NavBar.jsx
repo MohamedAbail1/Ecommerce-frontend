@@ -1,15 +1,25 @@
 import { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { LogOut, LogIn, User, ShoppingCart, UserCircle } from "lucide-react";
+import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { LogOut, LogIn, User, ShoppingCart, UserCircle, Search } from "lucide-react";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [user, setUser] = useState(null);
   const [cartItemsCount, setCartItemsCount] = useState(0);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [showSearch, setShowSearch] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
 
-  // Fonction pour mettre à jour le compteur du panier
+  // Synchroniser la recherche avec l'URL
+  useEffect(() => {
+    const searchParams = new URLSearchParams(location.search);
+    const search = searchParams.get('q') || '';
+    setSearchQuery(search);
+  }, [location.search]);
+
+  // Mettre à jour le compteur du panier
   const updateCartCount = () => {
     const storedCart = JSON.parse(localStorage.getItem('cart')) || [];
     const count = storedCart.reduce((total, item) => total + (item.quantity || 1), 0);
@@ -30,10 +40,8 @@ const Navbar = () => {
       }
     }
 
-    // Charger le panier initial
     updateCartCount();
 
-    // Écouter les événements de mise à jour du panier
     const handleCartUpdate = () => updateCartCount();
     window.addEventListener('cartUpdated', handleCartUpdate);
     
@@ -44,6 +52,7 @@ const Navbar = () => {
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
   const toggleProfile = () => setIsProfileOpen(!isProfileOpen);
+  const toggleSearch = () => setShowSearch(!showSearch);
 
   const handleLogout = () => {
     localStorage.removeItem("user");
@@ -51,6 +60,24 @@ const Navbar = () => {
     setUser(null);
     setIsProfileOpen(false);
     navigate("/login");
+  };
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    const params = new URLSearchParams();
+    
+    if (searchQuery.trim()) {
+      params.set('q', searchQuery.trim());
+      navigate({
+        pathname: '/catalog',
+        search: params.toString()
+      });
+    } else {
+      navigate('/catalog');
+    }
+    
+    setShowSearch(false);
+    setIsMenuOpen(false);
   };
 
   // Fermer le menu profil quand on clique ailleurs
@@ -77,16 +104,44 @@ const Navbar = () => {
             🛍️ ShopFlex
           </Link>
 
+          {/* Barre de recherche - Desktop */}
+          {/* <div className="hidden md:flex flex-1 mx-6 max-w-md">
+            <form onSubmit={handleSearch} className="w-full relative">
+              <input
+                type="text"
+                placeholder="Rechercher un produit..."
+                className="w-full pl-4 pr-10 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+              <button 
+                type="submit"
+                className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-blue-600"
+              >
+                <Search className="h-5 w-5" />
+              </button>
+            </form>
+          </div> */}
+
           {/* Navigation links - Desktop */}
           <div className="hidden md:flex space-x-6 text-gray-700 font-medium">
             <Link to="/" className="hover:text-blue-600 transition duration-200">Accueil</Link>
             <Link to="/shop/contact" className="hover:text-blue-600 transition duration-200">Contact</Link>
             <Link to="/shop/about" className="hover:text-blue-600 transition duration-200">À propos</Link>
-            <Link to="/shop/products" className="hover:text-blue-600 transition duration-200">Produits</Link>
+            <Link to="/catalog" className="hover:text-blue-600 transition duration-200">Catalogue</Link>
           </div>
 
           {/* Right side */}
           <div className="flex items-center space-x-4">
+            {/* Bouton recherche mobile */}
+            <button 
+              onClick={toggleSearch}
+              className="md:hidden p-1 text-gray-700 hover:text-blue-600 transition"
+              aria-label="Rechercher"
+            >
+              <Search className="h-6 w-6" />
+            </button>
+
             {/* Panier avec badge */}
             <Link 
               to="/shop/cart" 
@@ -166,6 +221,28 @@ const Navbar = () => {
             </button>
           </div>
         </div>
+
+        {/* Barre de recherche mobile */}
+        {showSearch && (
+          <div className="md:hidden mt-2 pb-2">
+            <form onSubmit={handleSearch} className="w-full relative">
+              <input
+                type="text"
+                placeholder="Rechercher un produit..."
+                className="w-full pl-4 pr-10 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                autoFocus
+              />
+              <button 
+                type="submit"
+                className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-blue-600"
+              >
+                <Search className="h-5 w-5" />
+              </button>
+            </form>
+          </div>
+        )}
       </div>
 
       {/* Mobile Menu */}
@@ -194,11 +271,11 @@ const Navbar = () => {
               Contact
             </Link>
             <Link 
-              to="/shop/products" 
+              to="/catalog" 
               className="block px-3 py-2 rounded-md text-gray-700 hover:text-blue-600 hover:bg-gray-50 font-medium"
               onClick={toggleMenu}
             >
-              Produits
+              Catalogue
             </Link>
             
             {/* Section compte mobile */}
