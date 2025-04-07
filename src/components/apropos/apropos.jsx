@@ -96,7 +96,7 @@ export default function AboutPage() {
                      image:hamzaImage
                    },
                    { 
-                     name: 'Mohammed Abail', 
+                     name: 'Mohamed Abail', 
                      role: 'Responsable Relation Client',
                      image: MohamedImage
                    }

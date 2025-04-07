@@ -12,7 +12,7 @@ const Footer = () => {
               ShopFlex
             </h2>
             <p className="text-gray-300 mb-4 text-sm leading-relaxed">
-              Votre destination en ligne pour des produits de qualité exceptionnelle depuis 2015.
+              Votre destination en ligne pour des produits de qualité exceptionnelle depuis 2025.
             </p>
             <div className="flex space-x-4">
               <a href="#" className="text-gray-300 hover:text-white hover:scale-110 transition-transform">
