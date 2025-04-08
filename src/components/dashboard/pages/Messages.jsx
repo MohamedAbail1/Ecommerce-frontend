@@ -62,9 +62,9 @@ export default function Messages() {
     const filtres = messages.filter((message) => {
       return (
         message.id.toString().includes(valeur) ||
-        message.name.toLowerCase().includes(valeur) || // Gardé en anglais
-        message.email.toLowerCase().includes(valeur) || // Gardé en anglais
-        message.subject.toLowerCase().includes(valeur) // Gardé en anglais
+        message.name.toLowerCase().includes(valeur) || //   
+        message.email.toLowerCase().includes(valeur) || //   
+        message.subject.toLowerCase().includes(valeur) //   
       );
     });
   
@@ -101,7 +101,7 @@ export default function Messages() {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ status: newStatus }), // Gardé en anglais
+        body: JSON.stringify({ status: newStatus }), //   
       });
 
       if (!response.ok) throw new Error("Échec de la mise à jour du statut du message");
@@ -135,7 +135,7 @@ export default function Messages() {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ reply: contenuReponse }), // Gardé en anglais
+        body: JSON.stringify({ reply: contenuReponse }), //   
       });
 
       if (!response.ok) throw new Error("Échec de l'envoi de la réponse");
@@ -281,14 +281,14 @@ export default function Messages() {
                         #{message.id}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900 font-medium">{message.name}</div> {/* Gardé en anglais */}
-                        <div className="text-sm text-gray-500">{message.email}</div> {/* Gardé en anglais */}
+                        <div className="text-sm text-gray-900 font-medium">{message.name}</div>  
+                        <div className="text-sm text-gray-500">{message.email}</div>  
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 max-w-xs truncate">
-                        {message.subject} {/* Gardé en anglais */}
+                        {message.subject}  
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {new Date(message.created_at).toLocaleDateString()} {/* Gardé en anglais */}
+                        {new Date(message.created_at).toLocaleDateString()}  
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                         <div className="flex justify-end space-x-2">
@@ -299,7 +299,7 @@ export default function Messages() {
                           >
                             <FaEye className="h-5 w-5" />
                           </button>
-                          {message.status !== 'replied' && ( /* Gardé en anglais */
+                          {message.status !== 'replied' && (       
                             <button
                               onClick={() => {
                                 afficherDetails(message);
@@ -373,12 +373,12 @@ export default function Messages() {
                 <div>
                   <p className="text-sm text-gray-500 mb-1">Statut</p>
                   <p className={`font-medium capitalize ${
-                    messageSelectionne.status === 'read' ? 'text-green-600' : /* Gardé en anglais */
-                    messageSelectionne.status === 'unread' ? 'text-blue-600' : /* Gardé en anglais */
-                    messageSelectionne.status === 'replied' ? 'text-purple-600' : /* Gardé en anglais */
+                    messageSelectionne.status === 'read' ? 'text-green-600' :       
+                    messageSelectionne.status === 'unread' ? 'text-blue-600' :       
+                    messageSelectionne.status === 'replied' ? 'text-purple-600' :       
                     'text-gray-600'
                   }`}>
-                    {messageSelectionne.status === 'read' ? 'lu' : /* Traduction affichée */
+                    {messageSelectionne.status === 'read' ? 'lu' :     
                      messageSelectionne.status === 'unread' ? 'non lu' :
                      messageSelectionne.status === 'replied' ? 'répondu' :
                      messageSelectionne.status}
@@ -386,35 +386,35 @@ export default function Messages() {
                 </div>
                 <div>
                   <p className="text-sm text-gray-500 mb-1">Expéditeur</p>
-                  <p className="font-medium">{messageSelectionne.name}</p> {/* Gardé en anglais */}
-                  <p className="text-sm text-gray-600">{messageSelectionne.email}</p> {/* Gardé en anglais */}
+                  <p className="font-medium">{messageSelectionne.name}</p>  
+                  <p className="text-sm text-gray-600">{messageSelectionne.email}</p>  
                 </div>
                 <div>
                   <p className="text-sm text-gray-500 mb-1">Date</p>
-                  <p className="font-medium">{new Date(messageSelectionne.created_at).toLocaleString()}</p> {/* Gardé en anglais */}
+                  <p className="font-medium">{new Date(messageSelectionne.created_at).toLocaleString()}</p>  
                 </div>
               </div>
 
               <div>
                 <p className="text-sm text-gray-500 mb-1">Sujet</p>
-                <p className="font-medium text-lg mb-4">{messageSelectionne.subject}</p> {/* Gardé en anglais */}
+                <p className="font-medium text-lg mb-4">{messageSelectionne.subject}</p>  
                 
                 <p className="text-sm text-gray-500 mb-1">Message</p>
                 <div className="bg-gray-50 p-4 rounded-lg whitespace-pre-line">
-                  {messageSelectionne.message} {/* Gardé en anglais */}
+                  {messageSelectionne.message}  
                 </div>
               </div>
 
-              {messageSelectionne.status === 'replied' && messageSelectionne.reply && ( /* Gardé en anglais */
+              {messageSelectionne.status === 'replied' && messageSelectionne.reply && (       
                 <div>
                   <p className="text-sm text-gray-500 mb-1">Votre réponse</p>
                   <div className="bg-purple-50 p-4 rounded-lg whitespace-pre-line">
-                    {messageSelectionne.reply} /* Gardé en anglais */
+                    {messageSelectionne.reply}       
                   </div>
                 </div>
               )}
 
-              {messageSelectionne.status !== 'replied' && ( /* Gardé en anglais */
+              {messageSelectionne.status !== 'replied' && (       
                 <div>
                   <label htmlFor="reply-textarea" className="block text-sm font-medium text-gray-700 mb-2">
                     Répondre à ce message
@@ -432,7 +432,7 @@ export default function Messages() {
             </div>
             <div className="border-t p-4 flex justify-between sticky bottom-0 bg-white">
               <div className="flex space-x-2">
-                {messageSelectionne.status !== 'replied' && ( /* Gardé en anglais */
+                {messageSelectionne.status !== 'replied' && (       
                   <button
                     onClick={envoyerReponse}
                     className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-lg hover:from-purple-600 hover:to-purple-700 transition-all shadow-md"
