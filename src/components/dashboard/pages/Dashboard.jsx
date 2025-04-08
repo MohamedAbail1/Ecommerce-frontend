@@ -156,7 +156,7 @@ export default function Dashboard() {
         <StatsCards title="Utilisateurs" value={usersCount} icon={faUsers} />
         <StatsCards title="Produits" value={productsCount} icon={faShoppingBag} />
         <StatsCards title="Commandes" value={ordersCount} icon={faClipboardList} />
-        <StatsCards title="Revenu" value={`$${revenue}`} icon={faBoxOpen} />
+        <StatsCards title="Revenu" value={`${revenue},00 DH`} icon={faBoxOpen} />
       </div>
 
       {/* Section des graphiques */}

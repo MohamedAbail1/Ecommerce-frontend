@@ -225,7 +225,7 @@ export default function Commandes() {
                         <span className="font-medium text-gray-800">{commande.user?.name || "Inconnu"}</span> 
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        ${commande.total_amount}   
+                        {commande.total_amount} DH   
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         <span className={`px-2 py-1 rounded-full text-xs capitalize ${
@@ -344,7 +344,7 @@ export default function Commandes() {
                 </div>
                 <div>
                   <p className="text-sm text-gray-500 mb-1">Montant total</p>
-                  <p className="font-medium">${commandeSelectionnee.total_amount}</p>   
+                  <p className="font-medium">{commandeSelectionnee.total_amount} DH </p>   
                 </div>
               </div>
 
@@ -371,9 +371,9 @@ export default function Commandes() {
                             <span className="text-gray-500">Prix :</span>
                             <span className="text-gray-500">Quantité :</span>
                             <span className="text-gray-500">Sous-total :</span>
-                            <span>${product.price}</span>   
+                            <span>{product.price} DH </span>   
                             <span>{product.pivot.quantity}</span>   
-                            <span>${(product.price * product.pivot.quantity).toFixed(2)}</span>   
+                            <span>{(product.price * product.pivot.quantity).toFixed(2)} DH</span>   
                           </div>
                         </div>
                       </div>

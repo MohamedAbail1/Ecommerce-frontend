@@ -155,7 +155,7 @@ export default function ListeProduits() {
                         <div className="text-sm font-medium text-gray-900">{produit.name}</div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-semibold">
-                        ${parseFloat(produit.price).toFixed(2)}
+                        {parseFloat(produit.price).toFixed(2)} DH
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${produit.stock > 10 ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800'}`}>
