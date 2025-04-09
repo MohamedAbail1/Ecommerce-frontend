@@ -92,12 +92,12 @@ export default function ProductForm({ product = null, onSubmit, onClose }) {
   return (
     <div className="bg-gradient-to-br from-white via-blue-50 to-white p-8 rounded-2xl shadow-xl max-w-xl mx-auto">
       <h2 className="text-2xl font-bold text-blue-700 mb-6 text-center">
-        {product ? "✏️ Edit Product" : "➕ Add New Product"}
+        {product ? "✏️ Modifier le produit" : "➕ Ajouter un nouveau produit"}
       </h2>
       <form onSubmit={handleSubmit} className="space-y-5">
         <div>
           <label htmlFor="name" className="block text-sm font-semibold text-gray-700 mb-1">
-            Product Name
+          Nom du produit
           </label>
           <input
             type="text"
@@ -124,7 +124,7 @@ export default function ProductForm({ product = null, onSubmit, onClose }) {
         </div>
         <div>
           <label htmlFor="price" className="block text-sm font-semibold text-gray-700 mb-1">
-            Price ($)
+          Prix (en dirhams)
           </label>
           <input
             type="number"
@@ -138,7 +138,7 @@ export default function ProductForm({ product = null, onSubmit, onClose }) {
         </div>
         <div>
           <label htmlFor="image" className="block text-sm font-semibold text-gray-700 mb-1">
-            Image URL
+          URL de l’image
           </label>
           <input
             type="text"
@@ -152,7 +152,7 @@ export default function ProductForm({ product = null, onSubmit, onClose }) {
         </div>
         <div>
           <label htmlFor="category_id" className="block text-sm font-semibold text-gray-700 mb-1">
-            Category
+          Catégorie
           </label>
           <select
             name="category_id"
@@ -163,7 +163,7 @@ export default function ProductForm({ product = null, onSubmit, onClose }) {
             className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 outline-none"
           >
             <option value="" disabled>
-              Select a category
+            Sélectionner une catégorie
             </option>
             {categories.map((category) => (
               <option key={category.id} value={category.id}>
@@ -190,7 +190,7 @@ export default function ProductForm({ product = null, onSubmit, onClose }) {
           type="submit"
           className="w-full py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition duration-200"
         >
-          {product ? "✅ Update Product" : "🚀 Add Product"}
+          {product ? "✅ Mettre à jour le produit" : "🚀 Ajouter le produit"}
         </button>
       </form>
     </div>
